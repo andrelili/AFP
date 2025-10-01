@@ -1,1 +1,1 @@
-# Funkcionális Specifikáció
+# Funkcionális specifikáció
