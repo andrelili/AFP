@@ -13,15 +13,15 @@ A fejlesztés *két fázisban* történik:
 ### Projektmunkások és felelőségek
 
 * *Frontend:*
-    + 
-    + 
+    + Szeghalmi Bence
+    + Patnon Patrik
   * Feladatuk:  
     - HTML, CSS, JavaScript alapú felület létrehozása  
     - Reszponzív design készítése  
     - Kosár működésének megvalósítása  
 
 * *Backend:*
-    + 
+    + Patnon Patrik
     + André Lili
   * Feladatuk:  
     - API és adatbáziskapcsolat kialakítása  
