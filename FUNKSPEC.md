@@ -116,3 +116,6 @@ A rendszer célja, hogy:
 | K10         | Admin felület, teljes jogosultságkezelés |
 
 ---
+
+### Ábra – Use-case diagram
+<img width="487" height="708" alt="Image" src="https://github.com/user-attachments/assets/8726af78-332c-4809-bfc8-528d31b51ee7" />
