@@ -68,3 +68,6 @@ A végső cél egy **minden eszközről elérhető, reszponzív és biztonságos
 - **KATEGÓRIA** – a termékek logikai csoportosítása (pl. nappali, hálószoba, fürdőszoba).  
 
 ---
+
+### Ábra – Use-case diagram
+<img width="487" height="708" alt="Image" src="https://github.com/user-attachments/assets/9e78404b-4cf6-4773-a84d-ed350a311c81" />
