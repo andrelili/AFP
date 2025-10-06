@@ -15,6 +15,7 @@ A fejlesztés *két fázisban* történik:
 * *Frontend:*
     + Szeghalmi Bence
     + Patnon Patrik
+    + Seres Tibor
   * Feladatuk:  
     - HTML, CSS, JavaScript alapú felület létrehozása  
     - Reszponzív design készítése  
