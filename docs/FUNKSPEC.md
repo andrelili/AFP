@@ -91,19 +91,12 @@ A rendszer célja, hogy:
 ---
 ## Képernyőtervek
 | Kép | Leírás |
-|-----|--------|
 | ![Főoldal vázlat felhasználónak](images/mainmenu.jpg) | **A főoldal terve, mezei felhasználó számára.** |
-|-----|--------|
 | ![Főoldal vázlat adminként](images/adminmainmenu.jpg)| **A főoldal terve adminként.** |
-|-----|--------|
 | ![Bejelentkezés](images/login.jpg) | **A bejelentkezés terve.** |
-|-----|--------|
-| ![Regisztráció](images/signin.jpg) | ***A regisztráció terve.** |
-|-----|--------|
+| ![Regisztráció](images/signin.jpg) | **A regisztráció terve.** |
 | ![Termék](images/itemexample.jpg) | **A termék leírása.** |
-|-----|--------|
 | ![Kosár](images/bagcheckout.jpg) | **A kosár terve** |
-|-----|--------|
 ---
 
 ## Forgatókönyvek

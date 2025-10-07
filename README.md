@@ -54,9 +54,9 @@ A fejlesztés két fázisban történik:
 
 ## Projekt dokumentáció
 
-- [Követelmény specifikáció](KOVSPEC.md)  
-- [Funkcionális specifikáció](FUNKSPEC.md)  
-- [Rendszerterv](RENDSZERTERV.md)  
+- [Követelmény specifikáció](docs/KOVSPEC.md)  
+- [Funkcionális specifikáció](docs/FUNKSPEC.md)  
+- [Rendszerterv](docs/RENDSZERTERV.md)  
 
 ---
 
