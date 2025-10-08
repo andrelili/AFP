@@ -10,8 +10,7 @@
 
     <header class="topbar">
         <div class="left-group">
-            <div class="logo">Logo</div>
-
+            <img class="logo" src="{{asset('images/butorlogo.png')}}" alt="">
             <div class="menu-icon" title="Menü">
                 <span></span>
                 <span></span>
