@@ -16,13 +16,12 @@
     .price{font-weight:600}
     .qty-input{width:64px}
     .offcanvas-header .badge{font-size:.8rem}
-    /* minden termékkártya kép legyen széles (16:9) és kitöltse a keretet */
-.card-img-top {
-  width: 100%;
-  aspect-ratio: 16 / 9;   /* lehet 21/9 is, ha „nagyon széleset” szeretnél */
-  object-fit: cover;      /* esztétikus vágás */
-  display: block;
-}
+    .card-img-top {
+      width: 100%;
+      aspect-ratio: 16 / 9;   
+      object-fit: cover;      
+      display: block;
+        }
 
   </style>
 </head>
@@ -292,3 +291,4 @@
   </script>
 </body>
 </html>
+
