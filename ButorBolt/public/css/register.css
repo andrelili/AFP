@@ -13,16 +13,15 @@ body {
     left: 0;
     width: 100%;
     height: 70px;
-    background-color: #d6d8db;       /* kicsit sötétebb szürke */
+    background-color: #d6d8db;       /* sötétebb szürke */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;                 /* padding összébb húzva */
+    padding: 0 10px;                 /* összébb húzva */
     border-bottom: 3px solid #000;
     z-index: 1000;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Csoportok a fejlécen */
 .left-group,
@@ -30,7 +29,7 @@ body {
 .right-group {
     display: flex;
     align-items: center;
-    gap: 10px;                       /* gap kicsit szűkebb */
+    gap: 10px;                       /* szűkebb gap */
 }
 
 /* Logó */
@@ -46,7 +45,7 @@ body {
     color: #000;
 }
 
-/* Menü ikon (három fekete vonal) */
+/* Menü ikon */
 .menu-icon {
     width: 28px;
     height: 20px;
@@ -63,7 +62,7 @@ body {
     border-radius: 2px;
 }
 
-/* Középső keresőmező */
+/* Középső kereső */
 .search-box {
     width: 400px;
     height: 40px;
@@ -104,7 +103,6 @@ body {
     color: white;
 }
 
-/* Profil kör mérete maradhat, hogy látszódjon */
 .profile-circle {
     width: 38px;
     height: 38px;
@@ -114,10 +112,10 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
-    flex-shrink: 0;                  /* biztosítja, hogy ne zsugorodjon össze */
+    flex-shrink: 0;
 }
 
-/* Ikonok (szív, homokóra, kosár) */
+/* Ikonok */
 .icon {
     font-size: 20px;
     cursor: pointer;
@@ -126,17 +124,18 @@ body {
 /* --- ŰRLAP --- */
 .form-container {
     max-width: 900px;
-    margin: 120px auto 60px; /* extra top space a fix fejléc miatt */
+    margin: 120px auto 60px;
     background: white;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
 }
 
-.form-container h4 {
+.form-container h4, .form-container h2 {
     margin-bottom: 30px;
     font-size: 22px;
-    text-align: left;
+    text-align: center;
 }
 
 .form-grid {
@@ -161,8 +160,9 @@ body {
     color: #999;
 }
 
-/* Nagy fekete regisztráció gomb */
-.btn-register {
+/* Nagy fekete gomb */
+.btn-register,
+.btn-login {
     background-color: black;
     color: white;
     width: 100%;
@@ -170,22 +170,86 @@ body {
     font-size: 20px;
     padding: 14px;
     border-radius: 6px;
+    cursor: pointer;
     transition: 0.3s;
 }
 
-.btn-register:hover {
+.btn-register:hover,
+.btn-login:hover {
     background-color: #343a40;
+}
+
+/* Nagy szürke téglalap */
+.grey-box {
+    margin: 40px auto;
+    width: 80%;
+    height: 300px;
+    background-color: #e9ecef;
+    border: 3px solid black;
+    border-radius: 10px;
+}
+
+/* --- MODAL --- */
+.modal-bg {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background: #e9ecef;
+    border: 3px solid black;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    padding: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.modal h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 🔹 MÓDOSÍTVA: login mezők kicsit keskenyebbek és középre igazítva */
+.modal .form-field input {
+    width: 85%;
+    height: 45px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 0 14px;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Bezárás gomb */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 /* --- RESPONSIVE --- */
 @media (max-width: 900px) {
-    .search-box {
-        width: 60%;
-    }
+    .search-box { width: 60%; }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
+    .form-grid { grid-template-columns: 1fr; }
 
     .topbar {
         flex-wrap: wrap;
@@ -199,8 +263,5 @@ body {
         margin-top: 10px;
     }
 
-    .form-container {
-        margin: 140px 20px 60px;
-        padding: 30px;
-    }
+    .form-container { margin: 140px 20px 60px; padding: 30px; }
 }
