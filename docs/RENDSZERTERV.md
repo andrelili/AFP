@@ -1,7 +1,7 @@
 # Rendszerterv
 
 ## A rendszer célja
-A webshop célja egy modern, egyszerűen használható, reszponzív online felület biztosítása, ahol a vásárlók böngészhetnek különgöző bútor kategóriák között (pl. nappali, hálószoba, fürdőszoba),  részletes termékleírásokat és képeket tekinthetnek meg, majd kosárba helyezhetik őket, és később rendelést adhatnak le.  
+A webshop célja egy modern, egyszerűen használható, reszponzív online felület biztosítása, ahol a vásárlók böngészhetnek különböző bútor kategóriák között (pl. nappali, hálószoba, fürdőszoba),  részletes termékleírásokat és képeket tekinthetnek meg, majd kosárba helyezhetik őket, és később rendelést adhatnak le.  
 A fejlesztés *két fázisban* történik:  
 1. *Kis projekt* – csak a kosár működésének megvalósítása adatbázis nélkül.  
 2. *Teljes webshop* – adatbázisra épülő, admin felülettel és felhasználói fiókokkal bővített rendszer.  
