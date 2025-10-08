@@ -1,4 +1,3 @@
-/* --- Alap --- */
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -6,33 +5,33 @@ body {
     padding: 0;
 }
 
-/* --- FEJLÉC (fix) --- */
+
 .topbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 70px;
-    background-color: #d6d8db;       /* sötétebb szürke */
+    background-color: #d6d8db;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;                 /* összébb húzva */
+    padding: 0 10px;
     border-bottom: 3px solid #000;
     z-index: 1000;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Csoportok a fejlécen */
+
 .left-group,
 .center-group,
 .right-group {
     display: flex;
     align-items: center;
-    gap: 10px;                       /* szűkebb gap */
+    gap: 10px;
 }
 
-/* Logó */
+
 .logo {
     width: 45px;
     height: 45px;
@@ -45,7 +44,7 @@ body {
     color: #000;
 }
 
-/* Menü ikon */
+
 .menu-icon {
     width: 28px;
     height: 20px;
@@ -62,7 +61,7 @@ body {
     border-radius: 2px;
 }
 
-/* Középső kereső */
+
 .search-box {
     width: 400px;
     height: 40px;
@@ -82,7 +81,6 @@ body {
     background: transparent;
 }
 
-/* Jobb oldali gombok és ikonok */
 .btn-nav {
     padding: 8px 14px;
     border: 2px solid #000;
@@ -115,13 +113,11 @@ body {
     flex-shrink: 0;
 }
 
-/* Ikonok */
 .icon {
     font-size: 20px;
     cursor: pointer;
 }
 
-/* --- ŰRLAP --- */
 .form-container {
     max-width: 900px;
     margin: 120px auto 60px;
@@ -160,7 +156,6 @@ body {
     color: #999;
 }
 
-/* Nagy fekete gomb */
 .btn-register,
 .btn-login {
     background-color: black;
@@ -179,7 +174,6 @@ body {
     background-color: #343a40;
 }
 
-/* Nagy szürke téglalap */
 .grey-box {
     margin: 40px auto;
     width: 80%;
@@ -189,7 +183,6 @@ body {
     border-radius: 10px;
 }
 
-/* --- MODAL --- */
 .modal-bg {
     display: none;
     position: fixed;
@@ -219,7 +212,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* 🔹 MÓDOSÍTVA: login mezők kicsit keskenyebbek és középre igazítva */
 .modal .form-field input {
     width: 85%;
     height: 45px;
@@ -235,7 +227,6 @@ body {
     margin-right: auto;
 }
 
-/* Bezárás gomb */
 .modal-close {
     position: absolute;
     top: 10px;
@@ -245,7 +236,6 @@ body {
     font-weight: bold;
 }
 
-/* --- RESPONSIVE --- */
 @media (max-width: 900px) {
     .search-box { width: 60%; }
 

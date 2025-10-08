@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- Fejléc -->
     <header class="topbar">
         <div class="left-group">
             <div class="logo">Logo</div>
@@ -35,20 +34,17 @@
         </div>
     </header>
 
-    <!-- Fő tartalom -->
     <main class="form-container">
-        <!-- Üdvözlés -->
+
         <h2 id="welcomeText">
             Üdv, {{ Auth::user()->name ?? 'Vendég' }}!
         </h2>
 
-        <!-- Nagy szürke téglalap -->
         <div class="grey-box">
-            <!-- Ide jöhet további tartalom -->
+
         </div>
     </main>
 
-    <!-- Modal a bejelentkezéshez -->
     <div class="modal-bg" id="loginModal">
         <div class="modal">
             <span class="modal-close" id="closeModal">&times;</span>
@@ -64,24 +60,24 @@
     </div>
 
     <script>
-        // Modal elemek
+
         const modal = document.getElementById('loginModal');
         const btnOpen = document.getElementById('btnOpenLogin');
         const btnClose = document.getElementById('closeModal');
         const btnLogin = document.getElementById('loginSubmit');
         const welcomeText = document.getElementById('welcomeText');
 
-        // Modal megnyitása
+
         btnOpen.addEventListener('click', () => {
             modal.style.display = 'flex';
         });
 
-        // Bezárás
+
         btnClose.addEventListener('click', () => {
             modal.style.display = 'none';
         });
 
-        // Bejelentkezés feldolgozás (frontend demo)
+
         btnLogin.addEventListener('click', () => {
             const username = document.getElementById('username').value.trim();
             if(username) {
@@ -92,7 +88,7 @@
             }
         });
 
-        // Klikk a modal háttérre = bezárás
+
         window.addEventListener('click', (e) => {
             if(e.target === modal) {
                 modal.style.display = 'none';
