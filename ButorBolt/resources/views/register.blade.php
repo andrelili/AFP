@@ -2,44 +2,84 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regisztráció</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- CSS a böngésző által elérhető css mappából -->
+    <link rel="stylesheet" href="css/register.css">
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg px-3">
-        <a class="navbar-brand" href="#">Logo</a>
-        <div class="ms-auto d-flex align-items-center gap-3">
-            <input class="form-control form-control-sm" type="text" placeholder="Keresés...">
-            <button class="btn btn-outline-secondary btn-sm">Bejelentkezés</button>
-            <button class="btn btn-outline-dark btn-sm">Regisztráció</button>
+    <!-- Fejléc -->
+    <header class="topbar">
+        <div class="left-group">
+            <!-- Logó -->
+            <div class="logo">Logo</div>
+
+            <!-- Menü ikon (három vonal) -->
+            <div class="menu-icon" title="Menü">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <!-- Szív ikon -->
+            <div class="icon" title="Kedvencek">❤️</div>
+
+            <!-- Homokóra ikon -->
+            <div class="icon" title="Szűrés">⏳</div>
         </div>
-    </nav>
 
+        <!-- Középső kereső -->
+        <div class="center-group">
+            <div class="search-box">
+                <input type="text" placeholder="Keresés...">
+            </div>
+        </div>
 
-    <div class="form-container text-center">
+        <!-- Jobb oldali ikonok és gombok -->
+        <div class="right-group">
+            <div class="icon" title="Kosár">🛒</div>
+            <button class="btn-nav">Bejelentkezés</button>
+            <button class="btn-nav primary">Regisztráció</button>
+            <div class="profile-circle" title="Profil">👤</div>
+        </div>
+    </header>
+
+    <!-- Regisztrációs űrlap -->
+    <main class="form-container">
         <h4>Kérjük, adja meg az alábbi adatokat:</h4>
+
         <form>
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Vezetéknév">
-                    <input type="text" class="form-control" placeholder="Email">
-                    <input type="password" class="form-control" placeholder="Jelszó">
-                    <input type="password" class="form-control" placeholder="Jelszó megerősítése">
+            <div class="form-grid">
+                <div class="form-field">
+                    <input type="text" placeholder="Vezetéknév">
                 </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Keresztnév">
-                    <input type="text" class="form-control" placeholder="Felhasználónév">
-                    <input type="text" class="form-control" placeholder="Telefonszám">
-                    <input type="text" class="form-control" placeholder="Cím">
+                <div class="form-field">
+                    <input type="text" placeholder="Keresztnév">
+                </div>
+                <div class="form-field">
+                    <input type="email" placeholder="Email">
+                </div>
+                <div class="form-field">
+                    <input type="text" placeholder="Felhasználónév">
+                </div>
+                <div class="form-field">
+                    <input type="password" placeholder="Jelszó">
+                </div>
+                <div class="form-field">
+                    <input type="password" placeholder="Jelszó megerősítése">
+                </div>
+                <div class="form-field">
+                    <input type="text" placeholder="Telefonszám">
+                </div>
+                <div class="form-field">
+                    <input type="text" placeholder="Cím">
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-register mt-4">Regisztráció</button>
+            <button type="submit" class="btn-register">Regisztráció</button>
         </form>
-    </div>
+    </main>
+
 </body>
 </html>
