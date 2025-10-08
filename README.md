@@ -1,7 +1,7 @@
 # Bútor Webshop
 
 Egy modern, reszponzív és könnyen használható online bútorwebshop fejlesztése, amely böngészőből telepítés nélkül elérhető.  
-A webshop célja, hogy gyors, letisztult és felhasználóbarát vásárlási élményt biztosítson minden eszközön.  
+A webshop célja, hogy gyors, letisztult és felhasználóbarát vásárlási élményt biztosítson.
 
 ## Projekt áttekintés
 
@@ -10,10 +10,11 @@ A fejlesztés két fázisban történik:
 1. **Kis projekt (prototípus)**  
    - Statikus terméklista  
    - Kosár funkció (hozzáadás, törlés, mennyiség módosítás, végösszeg)  
-   - „Rendelés leadása” gomb (még nem kapcsolódik adatbázishoz)  
+   - „Rendelés leadása” gomb (még nem kapcsolódik adatbázishoz)
+   - Felhasználói fiókok (regisztráció, bejelentkezés - még adatbázis nélkül) 
 
 2. **Teljes webshop (adatbázissal és backenddel)**  
-   - Felhasználói fiókok (regisztráció, bejelentkezés, profil)  
+   - Felhasználói fiókok (regisztráció, bejelentkezés, profil - adatbázissal) 
    - Termékek adatbázisból (név, leírás, ár, készlet, kép)  
    - Kosár mentése adatbázisba, rendelés leadása  
    - Értékelési rendszer (0–5 csillag + komment)  
@@ -77,7 +78,7 @@ A fejlesztés két fázisban történik:
 
 ## Fejlesztők
 
-- **Frontend:** Szeghalmi Bence, Patnon Patrik, Seres Tibor
+- **Frontend:** Szeghalmi Bence, Seres Tibor
 - **Backend:** Patnon Patrik, André Lili  
 - **Tesztelés:** Minden csapattag  
 

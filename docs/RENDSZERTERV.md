@@ -3,7 +3,7 @@
 ## A rendszer célja
 A webshop célja egy modern, egyszerűen használható, reszponzív online felület biztosítása, ahol a vásárlók böngészhetnek különböző bútor kategóriák között (pl. nappali, hálószoba, fürdőszoba),  részletes termékleírásokat és képeket tekinthetnek meg, majd kosárba helyezhetik őket, és később rendelést adhatnak le.  
 A fejlesztés *két fázisban* történik:  
-1. *Kis projekt* – csak a kosár működésének megvalósítása adatbázis nélkül.  
+1. *Kis projekt* – a kosár működésének megvalósítása, statikus terméklista, regisztráció és bejelentkezés, mind adatbázis nélkül.  
 2. *Teljes webshop* – adatbázisra épülő, admin felülettel és felhasználói fiókokkal bővített rendszer.  
 
 ---
@@ -14,7 +14,6 @@ A fejlesztés *két fázisban* történik:
 
 * *Frontend:*
     + Szeghalmi Bence
-    + Patnon Patrik
     + Seres Tibor
   * Feladatuk:  
     - HTML, CSS, JavaScript alapú felület létrehozása  
@@ -40,27 +39,30 @@ A fejlesztés *két fázisban* történik:
 
 ### *Fázis 1 – Kis projekt (alapverzió)*
 - *Cél:* működő prototípus létrehozása, ahol a felhasználók kosárba tehetik a bútorokat.  
-- *Technológia:* HTML, CSS, JavaScript.  
+- *Technológia:* HTML, CSS, JavaScript.
+- *Keretrendszer:* Laravel  
 - *Funkciók:*  
   + Termékek listázása (statikus fájlból)  
   + Termék kosárba helyezése  
   + Kosár tartalmának megjelenítése (név, ár, mennyiség, végösszeg)  
   + Kosárból törlés, mennyiség növelés/csökkentés  
-  + „Rendelés leadása” gomb (egyelőre csak jelzés)  
+  + „Rendelés leadása” gomb (egyelőre csak jelzés)
+  + Bejelentkezés és regisztráció (egyelőre adatbázis nélkül)  
 
  *Szereplők:*  
-- Látogató = Vásárló (még nincs regisztráció és admin szerepkör).  
+- Látogató = Vásárló (még nincs admin szerepkör).  
 
 ---
 
 ### *Fázis 2 – Teljes webshop (adatbázissal és backenddel)*  
 - *Cél:* a kis projekt kibővítése valós adatbázissal, felhasználói fiókokkal és admin felülettel.  
+- *Keretrendszer:* Laravel
 - *Technológia:*  
   + Frontend: HTML, CSS, JavaScript  
   + Backend: PHP
   + Adatbázis: MySQL (XAMPP + phpMyAdmin)
 - *Funkciók:*  
-  + *Felhasználók*: regisztráció, bejelentkezés, profil  
+  + *Felhasználók*: regisztráció, bejelentkezés, profil (adatbázissal)  
   + *Termékek*: adatbázisból betöltve (név, leírás, ár, készlet, kép)  
   + *Kosár és rendelés*: kosár mentése adatbázisba, rendelés leadása  
   + *Értékelés*: vásárlók a megvásárolt termékekhez értékelést adhatnak (0–5 csillag + szöveges komment)
@@ -69,8 +71,8 @@ A fejlesztés *két fázisban* történik:
 
  *Szereplők:*  
 - *Admin:* kezeli a termékeket, kategóriákat, felhasználókat, rendeléseket  
-- *Vásárló:* regisztráció után tud rendelni
-- *Látogató:* böngészhet, de vásárláshoz be kell jelentkeznie  
+- *Vásárló:* bejelentkezés után tud rendelni
+- *Látogató:* böngészhet, de vásárláshoz be kell jelentkeznie/regisztrálnia  
 
 ---
 
@@ -93,15 +95,25 @@ A fejlesztés *két fázisban* történik:
 
 ### Fázis 1 – Kis projekt
 - *Frontend:*  
+  + HTML, CSS, JS
   + Statikus terméklista (JavaScript fájlban)  
   + Kosár logika JS-ben  
-  + Nincs adatbázis  
+  + Kosár tartalmának megjelenítése és összegzés  
+- *Backend:*
+  + Egyszerű, kliensoldali logika (JavaScript) a kosár működtetésére  
+  + Nincs adatbázis még
+  + „Rendelés leadása” gomb csak jelzésként működik
 
 ### Fázis 2 – Teljes webshop
-- *Backend:* PHP 
-- *Adatbázis:* MySQL (felhasználók, termékek, rendelések)  
 - *Frontend:*  
-  + HTML, CSS, JS + Fetch API az API hívásokhoz  
+  + HTML, CSS, JS
+  + Kosár és rendelés logika továbbfejlesztése
+  + Termékek, kategóriák, rendelési státuszok megjelenítése dinamikusan  
+- *Backend:* 
+  + PHP 
+  + Adatbázis-kezelés (MySQL) a felhasználók, termékek, rendelések számára
+  + Admin funkciók kezelése (új termék, kategória, rendelés státusz) 
+- 
 
 ---
 
@@ -156,9 +168,10 @@ A fejlesztés *két fázisban* történik:
 ### Fázis 1
 - Kosár működésének ellenőrzése (hozzáadás, törlés, mennyiség módosítás, összegzés)  
 - Reszponzív megjelenés ellenőrzése
+- Regisztráció és bejelentkezés tesztelése adatbázis nélkül
 
 ### Fázis 2
-- Regisztráció és bejelentkezés tesztelése  
+- Regisztráció és bejelentkezés tesztelése adatbázissal
 - Rendelési folyamat tesztelése (kosár mentése, rendelés státusz)  
 - Felhasználói értékelések rögzítésének és megjelenítésének tesztelése
 - Értékelések alapján a termékek népszerűségének megfelelő sorrend ellenőrzése

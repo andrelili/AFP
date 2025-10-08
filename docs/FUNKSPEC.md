@@ -6,7 +6,7 @@ A jelenlegi piacon több nagy szereplő is kínál bútorokat online, azonban ez
 A cél egy modern, reszponzív, gyors működésű rendszer, amely egyszerűen elérhető böngészőből telepítés nélkül.  
 
 A projekt *két fázisban* kerül megvalósításra:
-1. **Kis projekt (prototípus)** – adatbázis nélküli kosárfunkció.
+1. **Kis projekt (prototípus)** – adatbázis nélküli kosárfunkció, bejelentkezés és regisztráció.
 2. **Teljes webshop** – adatbázissal, felhasználói fiókokkal és admin felülettel.
 
 ---
@@ -17,10 +17,11 @@ A végső rendszer egy lokális gépen futó, böngészőből elérhető bútorw
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** PHP  
 - **Adatbázis:** MySQL (XAMPP + phpMyAdmin) 
+- **Keretrendszer:** Laravel
 
 ### Szerepkörök
 - **Admin** – termékek, kategóriák, rendelések és felhasználók kezelése  
-- **Vásárló** – regisztráció után kosárba tehet termékeket és rendelést adhat le  
+- **Vásárló** – regisztráció/bejelentkezés után kosárba tehet termékeket és rendelést adhat le  
 - **Látogató** – böngészhet, de rendeléshez be kell jelentkeznie  
 
 A rendszer célja, hogy:
@@ -34,11 +35,12 @@ A rendszer célja, hogy:
 - Termékek böngészése statikus listából  
 - Kosár működése (hozzáadás, mennyiség módosítás, törlés)  
 - „Rendelés leadása” gomb – csak jelzés, nincs feldolgozás  
+- Bejelentkezés és regisztráció adatbázis nélkül
 
 ---
 
 ## Igényelt üzleti folyamatok modellje
-- **Felhasználói fiókok:** regisztráció, bejelentkezés, profilkezelés  
+- **Felhasználói fiókok:** regisztráció, bejelentkezés, profilkezelés adatbázissal  
 - **Kosár és rendelés:** kosár mentése adatbázisba, rendelés leadása  
 - **Értékelés:** 0–5 csillag és szöveges komment termékekhez  
 - **Admin funkciók:** új termék/kategória hozzáadása, készletmódosítás, rendelés státusz kezelése  

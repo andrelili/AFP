@@ -4,7 +4,7 @@
 Az alkalmazás célja egy modern, reszponzív online bútorwebshop létrehozása, amely egyszerűen használható a vásárlók számára. Az oldalon böngészhetnek különböző bútor kategóriák között (pl. nappali, hálószoba, fürdőszoba), részletes termékleírásokat és képeket tekinthetnek meg, kosárba helyezhetik a termékeket, majd rendelést adhatnak le.  
 
 A projekt két fázisban valósul meg:  
-1. **Kis projekt (prototípus)** – kosár működésének megvalósítása adatbázis nélkül.  
+1. **Kis projekt (prototípus)** – kosár működésének megvalósítása, illetve bejelentkezés és regisztráció adatbázis nélkül.  
 2. **Teljes webshop** – adatbázisra épülő, felhasználói fiókokkal és admin felülettel rendelkező rendszer.  
 
 ---
@@ -15,12 +15,13 @@ A webshop ötletét a fejlesztőcsapat kapta megbízásként azzal a céllal, ho
 ---
 
 ## Vágyalomrendszer
-A végső cél egy **minden eszközről elérhető, reszponzív és biztonságos** bútorwebshop.  
-- **Technológiák**: Frontend (HTML, CSS, JavaScript), Backend (PHP), Adatbázis (MySQL).  
+A végső cél egy **reszponzív és biztonságos** bútorwebshop.  
+- **Technológiák**: Frontend (HTML, CSS, JavaScript), Backend (PHP), Adatbázis (MySQL). 
+- **Keretrendszer**: Laravel 
 - **Platformfüggetlenség**: böngészőből telepítés nélkül elérhető.  
 - **Felhasználói szerepkörök**:  
   - **Admin** – termékek, kategóriák, rendelések és felhasználók kezelése.  
-  - **Vásárló** – regisztráció után kosárba tehet termékeket és rendelést adhat le.  
+  - **Vásárló** – regisztráció/bejelentkezés után kosárba tehet termékeket és rendelést adhat le.  
   - **Látogató** – böngészhet, de vásárláshoz be kell jelentkeznie.  
 
 ---
