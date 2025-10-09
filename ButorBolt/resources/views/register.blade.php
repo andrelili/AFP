@@ -39,7 +39,8 @@
     <main class="form-container">
         <h4>Kérjük, adja meg az alábbi adatokat:</h4>
 
-        <form>
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
             <div class="form-grid">
                 <div class="form-field">
                     <input type="text" placeholder="Vezetéknév">
