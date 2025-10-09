@@ -39,6 +39,9 @@
         <li class="nav-item me-2">
             <a class="nav-link" href="{{ route('register') }}">Regisztráció</a>
         </li>
+        <li class="nav-item me-2">
+            <a class="nav-link" href="{{ route('login') }}">Bejelentkezés</a>
+        </li>
           <li class="nav-item">
             <button class="btn btn-sm btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas" aria-controls="cartCanvas">
               <i class="bi bi-cart3 me-1"></i> Kosár
