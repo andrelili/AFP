@@ -30,34 +30,33 @@
 
         <div class="right-group">
             <div class="icon" title="Kosár">
-            <a href="{{ route('bag.index') }}" style="text-decoration:none; color:inherit;">
-            🛒
-            @php $cnt = session('cart_count', collect(session('cart', []))->sum('qty')); @endphp
-            @if($cnt > 0)
-          <span style="font-weight:700;">({{ $cnt }})</span>
-            @endif
-          </a>
-        </div>
+                <a href="{{ route('bag.index') }}" style="text-decoration:none; color:inherit;">
+                    🛒
+                    @php $cnt = session('cart_count', collect(session('cart', []))->sum('qty')); @endphp
+                    @if($cnt > 0)
+                    <span style="font-weight:700;">({{ $cnt }})</span>
+                    @endif
+                </a>
+            </div>
 
-            @if (Route::has('login'))
-                <a href="{{ route('login') }}" class="btn-nav" id="btnOpenLogin">Bejelentkezés</a>
-            @else
-                <a href="{{ url('/login') }}" class="btn-nav" id="btnOpenLogin">Bejelentkezés</a>
-            @endif
+
+            <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
 
             @if (Route::has('register'))
                 <a href="{{ route('register') }}" class="btn-nav primary">Regisztráció</a>
             @else
                 <a href="{{ url('/register') }}" class="btn-nav primary">Regisztráció</a>
             @endif
-            <div class="profile-circle" title="Profil">👤</div>
+
+
+            <div class="profile-circle" id="profileIcon" title="Profil" style="display:none;">👤</div>
         </div>
     </header>
 
     <main class="home-wrap">
         <section class="hero-card" style="margin-top: 120px;">
             <div class="hero-text">
-                <h1>Üdvözlünk a ButorBoltban!</h1>
+                <h1 id="welcomeText">Üdvözlünk a ButorBoltban!</h1>
                 <p>Fedezd fel minőségi bútorainkat – modern, skandináv és klasszikus stílusban, elérhető áron!</p>
             </div>
         </section>
@@ -89,6 +88,63 @@
             <div>© {{ date('Y') }} ButorBolt</div>
         </div>
     </footer>
+
+
+    <div class="modal-bg" id="loginModal" style="display:none;">
+        <div class="modal">
+            <span class="modal-close" id="closeModal">&times;</span>
+            <h3>Bejelentkezés</h3>
+            <div class="form-field">
+                <input type="text" id="username" placeholder="Felhasználónév">
+            </div>
+            <div class="form-field">
+                <input type="password" id="password" placeholder="Jelszó">
+            </div>
+            <button class="btn-login" id="loginSubmit">Bejelentkezés</button>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('loginModal');
+        const btnOpen = document.getElementById('btnOpenLogin');
+        const btnClose = document.getElementById('closeModal');
+        const btnLogin = document.getElementById('loginSubmit');
+        const welcomeText = document.getElementById('welcomeText');
+        const profileIcon = document.getElementById('profileIcon');
+
+
+        btnOpen.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+
+        btnClose.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+
+        btnLogin.addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                welcomeText.textContent = `Üdv, ${username}!`;
+                modal.style.display = 'none';
+
+
+                profileIcon.style.display = 'inline-flex';
+
+
+                btnOpen.style.display = 'none';
+                document.querySelector('.btn-nav.primary').style.display = 'none';
+            } else {
+                alert('Kérlek add meg a felhasználóneved!');
+            }
+        });
+    </script>
 
     <style>
         .home-wrap{padding: 24px;}
