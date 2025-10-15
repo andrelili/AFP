@@ -44,9 +44,9 @@
             <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
 
             @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="btn-nav primary">Regisztráció</a>
+                <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
             @else
-                <a href="{{ url('/register') }}" class="btn-nav primary">Regisztráció</a>
+                <a href="{{ url('/register') }}" class="btn-nav">Regisztráció</a>
             @endif
 
 
