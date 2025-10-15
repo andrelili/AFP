@@ -66,17 +66,20 @@
             <div class="product-grid">
                 @foreach ($products as $p)
                 <div class="product-card">
-                    <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
-                    <div class="product-info">
-                        <h3>{{ $p['name'] }}</h3>
-                        <div class="price">{{ number_format($p['price'], 0, '', ' ') }} Ft</div>
-                        <div class="actions">
-                            <form method="POST" action="{{ Route::has('bag.add') ? route('bag.add', ['id' => $p['id']]) : url('/bag/add/'.$p['id']) }}">
-                                @csrf
-                                <button type="submit" class="btn-nav">Kosárba</button>
-                            </form>
-                            <a class="btn-nav primary" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
+                    <a href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}"
+                       style="text-decoration: none; color: inherit;">
+                        <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
+                        <div class="product-info">
+                            <h3>{{ $p['name'] }}</h3>
+                            <div class="price">{{ number_format($p['price'], 0, '', ' ') }} Ft</div>
                         </div>
+                    </a>
+                    <div class="actions" style="padding: 0 14px 14px;">
+                        <form method="POST" action="{{ Route::has('bag.add') ? route('bag.add', ['id' => $p['id']]) : url('/bag/add/'.$p['id']) }}">
+                            @csrf
+                            <button type="submit" class="btn-nav">Kosárba</button>
+                        </form>
+                        <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     </div>
                 </div>
                 @endforeach
