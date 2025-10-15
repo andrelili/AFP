@@ -10,7 +10,9 @@
 
     <header class="topbar">
         <div class="left-group">
-            <img class="logo" src="{{asset('images/butorlogo.png')}}" alt="">
+            <a href="{{ route('home') }}">
+                <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
+            </a>
             <div class="menu-icon" title="Menü">
                 <span></span>
                 <span></span>
@@ -30,8 +32,6 @@
 
         <div class="right-group">
             <div class="icon" title="Kosár">🛒</div>
-            <button class="btn-nav">Bejelentkezés</button>
-            <button class="btn-nav primary">Regisztráció</button>
             <div class="profile-circle" title="Profil">👤</div>
         </div>
     </header>

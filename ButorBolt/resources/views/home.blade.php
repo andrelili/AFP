@@ -10,7 +10,9 @@
 
     <header class="topbar">
         <div class="left-group">
-            <img class="logo" src="{{asset('images/butorlogo.png')}}" alt="ButorBolt logó">
+            <a href="{{ route('home') }}">
+                <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
+            </a>
             <div class="menu-icon" title="Menü">
                 <span></span>
                 <span></span>
