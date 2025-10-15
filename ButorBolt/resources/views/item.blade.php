@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $item['name'] }} – ButorBolt</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <link rel="stylesheet" href="{{asset('css/item.css')}}">
 </head>
 <body>
 
@@ -59,20 +60,6 @@
         </div>
     </div>
 </main>
-
-<style>
-.item-detail{display:flex;flex-direction:column;gap:20px;background:#fff;padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-.item-image img{width:100%;border-radius:12px;object-fit:cover}
-.item-info{display:flex;flex-direction:column;gap:12px}
-.item-info h1{margin:0;font-size:1.8rem}
-.price{font-weight:600;font-size:1.2rem}
-.desc{color:#555}
-@media(min-width:900px){
-    .item-detail{flex-direction:row;align-items:flex-start}
-    .item-image{flex:1}
-    .item-info{flex:1;padding-left:24px}
-}
-</style>
 
 </body>
 </html>

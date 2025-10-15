@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kezdőlap</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <link rel="stylesheet" href="{{asset('css/home.css')}}">
 </head>
 <body>
 
@@ -145,24 +146,5 @@
             }
         });
     </script>
-
-    <style>
-        .home-wrap{padding: 24px;}
-        .hero-card{background:#fff;border-radius:16px;padding:24px;margin:16px 0;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-        .hero-text h1{margin:0 0 8px}
-        .section{margin:32px 0}
-        .product-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:16px}
-        @media(min-width:700px){.product-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(min-width:1100px){.product-grid{grid-template-columns:repeat(4,1fr)}}
-        .product-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.06);display:flex;flex-direction:column}
-        .product-img{width:100%;padding-top:70%;background-size:cover;background-position:center}
-        .product-info{padding:14px;display:flex;flex-direction:column;gap:10px}
-        .price{font-weight:600}
-        .actions{display:flex;gap:10px}
-        .footer{margin-top:32px;border-top:1px solid #e8e8e8}
-        .footer-inner{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
-        .footer-links{display:flex;gap:12px}
-        .footer a{text-decoration:none}
-    </style>
 </body>
 </html>
