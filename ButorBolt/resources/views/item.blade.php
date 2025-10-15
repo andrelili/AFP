@@ -63,8 +63,13 @@
             <div class="price">{{ number_format($item['price'], 0, '', ' ') }} Ft</div>
             <p class="desc">{{ $item['desc'] ?? 'Ez a termék jelenleg nem rendelkezik leírással.' }}</p>
 
-            <form method="POST" action="{{ url('/bag/add/'.$item['id']) }}">
+            <form method="POST" action="{{ url('/bag/add/'.$item['id']) }}" class="add-to-cart-form">
                 @csrf
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <label for="qty" style="font-weight: 600;">Mennyiség:</label>
+                    <input type="number" id="qty" name="qty" value="1" min="1"
+                           style="width: 70px; padding: 5px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
                 <button type="submit" class="btn-nav primary">Kosárba</button>
             </form>
             <a href="{{ route('home') }}" class="btn-nav">← Vissza a főoldalra</a>

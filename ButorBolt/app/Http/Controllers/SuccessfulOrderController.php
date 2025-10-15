@@ -8,7 +8,8 @@ class SuccessfulOrderController extends Controller
 {
     public function show()
     {
-        return view('successful_order');
+        $message = request()->session()->get('successfulOrder', 'A megrendelésed sikeres volt.');
+        return view('successful_order', compact('message'));
     }
 
 }

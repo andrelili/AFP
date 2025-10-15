@@ -22,16 +22,17 @@ class BagCheckoutController extends Controller
         }
 
         $cart = $request->session()->get('cart', []);
+        $qty = max(1, (int)$request->input('qty', 1));
 
         if (isset($cart[$id])) {
-            $cart[$id]['qty'] += 1;
+            $cart[$id]['qty'] += $qty;
         } else {
             $cart[$id] = [
                 'id'    => $product['id'],
                 'name'  => $product['name'],
                 'price' => $product['price'],
                 'img'   => $product['img'],
-                'qty'   => 1,
+                'qty'   => $qty,
             ];
         }
 
