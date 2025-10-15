@@ -71,6 +71,23 @@ class ItemController extends Controller
         $item = collect($products)->firstWhere('id', (int)$id);
         if (!$item) abort(404);
 
-        return view('item', compact('item'));
+        $stock = $this->getstock((int)$id);
+        return view('item', compact('item','stock'));
+
+    }
+    private function readStockFile(): array{
+        $path = resource_path('data/stock.json');
+        if (!file_exists($path)){
+            return [];
+        }
+        $json = file_get_contents($path);
+        return json_decode($json, true) ?? [];
+    }
+    private function getStock(int $id):int{
+        $list = $this->readStockFile();
+        foreach ($list as $r){
+            if (isset($r['id']) && $r['id'] === $id) return (int)($r['stock'] ?? 0);
+        }
+        return 0;
     }
 }

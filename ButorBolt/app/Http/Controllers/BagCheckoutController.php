@@ -21,9 +21,17 @@ class BagCheckoutController extends Controller
             return back()->with('error', 'A termék nem található.');
         }
 
-        $cart = $request->session()->get('cart', []);
         $qty = max(1, (int)$request->input('qty', 1));
+        if ($qty <= 0){
+            return back()->with('error', 'Érvénytelen mennyiség.');
+        }
 
+        $available = $this->getStock($id);
+        if($qty > $available){
+            return back()->with('error', 'Nincs ennyi raktáron. Elérhető: '. $available . 'db.');
+        }
+
+        $cart = $request->session()->get('cart', []);
         if (isset($cart[$id])) {
             $cart[$id]['qty'] += $qty;
         } else {
@@ -45,6 +53,9 @@ class BagCheckoutController extends Controller
     public function update(Request $request, $id)
     {
         $qty = max(1, (int)$request->input('qty', 1));
+        if($qty <= 0){
+            return back()->with('error', 'Érvénytelen mennyiség.');
+        }
         $cart = $request->session()->get('cart', []);
 
         if (isset($cart[$id])) {
@@ -58,8 +69,14 @@ class BagCheckoutController extends Controller
 
     public function remove(Request $request, $id)
     {
+        $id = (int)$id;
         $cart = $request->session()->get('cart', []);
-        Arr::forget($cart, $id);
+        if(isset($cart[$id])){
+            $qty = $cart[$id]['qty'];
+            unset($cart[$id]);
+
+            $this->adjustStock($id,$qty);
+        }
 
         $request->session()->put('cart', $cart);
         $request->session()->put('cart_count', collect($cart)->sum('qty'));
@@ -69,6 +86,11 @@ class BagCheckoutController extends Controller
 
     public function clear(Request $request)
     {
+        $cart = $request->session()->get('cart', []);
+        foreach($cart as $id => $item){
+            $this->adjustStock((int)$id, $item['qty']);
+        }
+
         $request->session()->forget(['cart', 'cart_count']);
         return back()->with('success', 'Kosár ürítve.');
     }
@@ -100,7 +122,63 @@ class BagCheckoutController extends Controller
         //if(!session()->has('user')){
         //    return redirect()->route('bag')->with('error', 'Jelentkezz be a rendeléshez!');
         //}
+
+        $cart = $request->session()->get('cart', []);
+        foreach($cart as $id => $item){
+            $this->adjustStock((int)$id, -$item['qty']);
+        }
+
         $request->session()->forget(['cart', 'cart_count']);
         return redirect()->route('successful.order')->with('successfulOrder', 'A megrendelés sikeresen elküldve!');
+    }
+
+     private function readStock(): array
+    {
+        $path = resource_path('data/stock.json');
+        if (!file_exists($path)) {
+            return [];
+        }
+        return json_decode(file_get_contents($path), true) ?: [];
+    }
+
+    private function writeStock(array $list): void
+    {
+        $path = resource_path('data/stock.json');
+        if (!is_dir(dirname($path))) {
+            mkdir(dirname($path), 0755, true);
+        }
+        file_put_contents($path, json_encode(array_values($list), JSON_PRETTY_PRINT));
+    }
+
+    private function getStock(int $id): int
+    {
+        $list = $this->readStock();
+        foreach ($list as $item) {
+            if (isset($item['id']) && $item['id'] === $id) {
+                return (int)($item['stock'] ?? 0);
+            }
+        }
+        return 0;
+    }
+
+
+     private function adjustStock(int $id, int $delta): void
+    {
+        $list = $this->readStock();
+        $found = false;
+
+        foreach ($list as &$item) {
+            if (isset($item['id']) && $item['id'] === $id) {
+                $item['stock'] = max(0, (int)($item['stock'] ?? 0) + $delta);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $list[] = ['id' => $id, 'stock' => max(0, $delta)];
+        }
+
+        $this->writeStock($list);
     }
 }
