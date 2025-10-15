@@ -55,14 +55,10 @@
           @csrf
           <button class="btn-nav">Kosár ürítése</button>
         </form>
-        @if(session()->has('user'))
           <form method="POST" action="{{ route('bag.order') }}">
             @csrf
             <button class="btn-nav" style="background:#28a745;color:white;">Rendelés leadása</button>
           </form>
-        @else
-          <div style="color:#721c24;font-weight:600;">Rendeléshez jelentkezz be!</div>
-        @endif
         <div style="font-weight:700;font-size:1.1rem;">Összesen: {{ number_format($total,0,'',' ') }} Ft</div>
       </div>
     @endif

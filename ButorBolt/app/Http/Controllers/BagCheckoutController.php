@@ -94,10 +94,12 @@ class BagCheckoutController extends Controller
     }
     public function order(Request $request)
     {
-        if(!session()->has('user')){
-            return redirect()->route('bag')->with('error', 'Jelentkezz be a rendeléshez!');
-        }
+        //HA LESZ ADATBÁZIS, AKKOR ELLENŐRIZZEN
+
+        //if(!session()->has('user')){
+        //    return redirect()->route('bag')->with('error', 'Jelentkezz be a rendeléshez!');
+        //}
         $request->session()->forget(['cart', 'cart_count']);
-        return redirect()->route('bag')->with('success', 'A megrendelés sikeresen elküldve!');
+        return redirect()->route('successful.order')->with('successfulOrder', 'A megrendelés sikeresen elküldve!');
     }
 }
