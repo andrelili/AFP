@@ -54,34 +54,43 @@
             @csrf
             <div class="form-grid">
                 <div class="form-field">
-                    <input type="text" placeholder="Vezetéknév">
+                    <input type="text" name="first_name" placeholder="Vezetéknév">
                 </div>
                 <div class="form-field">
-                    <input type="text" placeholder="Keresztnév">
+                    <input type="text" name="last_name" placeholder="Keresztnév">
                 </div>
                 <div class="form-field">
-                    <input type="email" placeholder="Email">
+                    <input type="email" name="email" placeholder="Email">
                 </div>
                 <div class="form-field">
-                    <input type="text" placeholder="Felhasználónév">
+                    <input type="text" name="username" placeholder="Felhasználónév">
                 </div>
                 <div class="form-field">
-                    <input type="password" placeholder="Jelszó">
+                    <input type="password" name="password" placeholder="Jelszó">
                 </div>
                 <div class="form-field">
-                    <input type="password" placeholder="Jelszó megerősítése">
+                    <input type="password" name="password_confirmation" placeholder="Jelszó megerősítése">
                 </div>
                 <div class="form-field">
-                    <input type="text" placeholder="Telefonszám">
+                    <input type="text" name="phone" placeholder="Telefonszám">
                 </div>
                 <div class="form-field">
-                    <input type="text" placeholder="Cím">
+                    <input type="text" name="address" placeholder="Cím">
                 </div>
             </div>
 
             <button type="submit" class="btn-register">Regisztráció</button>
         </form>
     </main>
+    @if ($errors->any())
+    <div class="errors">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 </body>
 </html>
