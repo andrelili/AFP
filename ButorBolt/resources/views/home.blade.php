@@ -6,6 +6,26 @@
     <title>Kezdőlap</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <style>
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+        }
+        .category-buttons .btn-nav {
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+        .category-buttons .btn-nav.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+    </style>
 </head>
 <body>
 
@@ -73,16 +93,24 @@
         </div>
     </section>
 
+    <section class="category-buttons" id="categoryButtons">
+         <button class="btn-nav active" data-category="all">Összes</button>
+         @foreach ($categories as $category)
+            <button class="btn-nav" data-category="{{ $category }}">{{ $category }}</button>
+         @endforeach
+    </section>
+
     <section class="section">
         <div class="product-grid">
             @foreach ($products as $p)
-            <div class="product-card">
+            <div class="product-card" data-category="{{ $p['category'] }}">
                 <a href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}"
                    style="text-decoration: none; color: inherit;">
                     <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
                     <div class="product-info">
                         <h3>{{ $p['name'] }}</h3>
                         <div class="price">{{ number_format($p['price'], 0, '', ' ') }} Ft</div>
+                        {{-- <small style="color: #6c757d;">Kategória: {{ $p['category'] }}</small> --}}
                     </div>
                 </a>
                 <div class="actions" style="padding: 0 14px 14px;">
@@ -120,18 +148,11 @@
 
 <script>
     const modal = document.getElementById('loginModal');
-    const btnOpen = document.getElementById('btnOpenLogin');
-    const btnClose = document.getElementById('closeModal');
-    const btnLogin = document.getElementById('loginSubmit');
-    const welcomeText = document.getElementById('welcomeText');
-    const profileIcon = document.getElementById('profileIcon');
-
-    const products = @json($products);
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
+     searchInput.addEventListener('input', function() {
+         const query = this.value.toLowerCase().trim();
         suggestionsBox.innerHTML = '';
 
         if (query === '') {
@@ -159,7 +180,7 @@
         suggestionsBox.style.display = 'block';
     });
 
-    searchInput.addEventListener('blur', () => {
+     searchInput.addEventListener('blur', () => {
         setTimeout(() => suggestionsBox.style.display = 'none', 100);
     });
 
@@ -168,18 +189,17 @@
             modal.style.display = 'flex';
         });
     }
-
-    if (btnClose) {
+     if (btnClose) {
         btnClose.addEventListener('click', () => {
             modal.style.display = 'none';
         });
     }
 
-    window.addEventListener('click', (e) => {
+     window.addEventListener('click', (e) => {
         if (e.target === modal) modal.style.display = 'none';
     });
 
-    if (btnLogin) {
+     if (btnLogin) {
         btnLogin.addEventListener('click', () => {
             const username = document.getElementById('username').value.trim();
             if (username) {
@@ -191,6 +211,32 @@
             }
         });
     }
+
+
+    const categoryButtonsContainer = document.getElementById('categoryButtons');
+    const productCards = document.querySelectorAll('.product-card');
+    const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
+
+    categoryButtonsContainer.addEventListener('click', (event) => {
+        if (event.target.tagName === 'BUTTON') {
+            const selectedCategory = event.target.getAttribute('data-category');
+
+            categoryButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            productCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+                    card.style.display = 'flex'; 
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    });
+
 </script>
 
 </body>
