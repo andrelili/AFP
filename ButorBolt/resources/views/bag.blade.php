@@ -66,7 +66,7 @@
           @csrf
           <button class="btn-nav">Kosár ürítése</button>
         </form>
-          <form method="POST" action="{{ route('bag.order') }}">
+          <form method="GET" action="{{ route('checkout.show') }}">
             @csrf
             <button class="btn-nav" style="background:#28a745;color:white;">Tovább a rendeléshez</button>
           </form>

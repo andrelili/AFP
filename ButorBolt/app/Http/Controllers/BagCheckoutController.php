@@ -129,7 +129,7 @@ class BagCheckoutController extends Controller
         }
 
         $request->session()->forget(['cart', 'cart_count']);
-        return redirect()->route('successful.order')->with('successfulOrder', 'A megrendelés sikeresen elküldve!');
+        return redirect()->route('checkout')->with('checkout', 'Tovább a megrendeléshez!');
     }
 
      private function readStock(): array
@@ -162,7 +162,7 @@ class BagCheckoutController extends Controller
     }
 
 
-     private function adjustStock(int $id, int $delta): void
+     public function adjustStock(int $id, int $delta): void
     {
         $list = $this->readStock();
         $found = false;

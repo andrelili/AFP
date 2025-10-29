@@ -70,9 +70,9 @@
                         </select>
                     </div>
                 </div>
-
-                <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
-            </form>
+                    <form method="GET" action="{{ route('successful.order') }}">
+                        <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
+                </form>
         </div>
 
     </div>
