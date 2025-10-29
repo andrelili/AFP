@@ -28,7 +28,6 @@
             </svg>
     </div>
   </div>
-  <div class="center-group"><div class="search-box"><input type="text" placeholder="Keresés..."></div></div>
   <div class="right-group">
     <a href="{{ route('home') }}" class="btn-nav">Főoldal</a>
   </div>
