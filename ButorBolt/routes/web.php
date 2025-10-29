@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\BagCheckoutController;
 use App\Http\Controllers\SuccessfulOrderController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', [HomeController::class, 'show'])->name('home');
 Route::match(['get', 'post'], '/register', [RegisterController::class, 'register'])->name('register');
@@ -24,3 +25,9 @@ Route::post('/bag/update/{id}', [BagCheckoutController::class, 'update'])->name(
 Route::post('/bag/remove/{id}', [BagCheckoutController::class, 'remove'])->name('bag.remove');
 Route::post('/bag/clear', [BagCheckoutController::class, 'clear'])->name('bag.clear');
 Route::post('/bag/order', [BagCheckoutController::class, 'order'])->name('bag.order');
+
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
+Route::post('/admin/update', [AdminController::class, 'update'])->name('admin.update');
+Route::delete('/admin/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
