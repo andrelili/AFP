@@ -16,7 +16,7 @@ Route::match(['get', 'post'], '/register', [RegisterController::class, 'register
 Route::get('/bag-checkout', [BagCheckoutController::class, 'show'])->name('bag.checkout');
 Route::get('/items/{id}', [App\Http\Controllers\ItemController::class, 'show'])->name('items.show');
 Route::get('/successful-order', [SuccessfulOrderController::class, 'show'])->name('successful.order');
-Route::get('/favorites', [FavoritesController::class, 'show'])->name('favorites.show');
+
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 
 Route::get('/', [HomeController::class, 'show'])->name('home');
@@ -44,3 +44,8 @@ Route::delete('/admin/{id}', [AdminController::class, 'destroy'])->name('admin.d
 Route::get('/login', [LoginController::class, 'show'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/favorites', [FavoritesController::class, 'show'])->name('favorites.show');
+Route::get('/favourites', [FavoritesController::class, 'index'])->name('favourites.index');
+Route::post('/favourites/add/{id}', [FavoritesController::class, 'add'])->name('favourites.add');
+Route::delete('/favourites/{id}', [FavoritesController::class, 'remove'])->name('favourites.remove');
