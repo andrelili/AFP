@@ -6,6 +6,60 @@
     <title>Rendelés leadása – ButorBolt</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <style>
+        main.home-wrap {
+            margin-top: 120px;
+            text-align: center;
+        }
+
+        .form-container {
+            text-align: left;
+            width: 90%;
+            max-width: 700px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 30px;
+            }
+        }
+
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .btn-register {
+            background-color: #000;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-register:hover {
+            background-color: #333;
+        }
+    </style>
 </head>
 <body>
 
@@ -36,10 +90,9 @@
     </div>
 </header>
 
-<main class="home-wrap" style="margin-top: 120px; text-align:center;">
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 40px; max-width:500px; margin:auto;">
-
-        <div class="form-container" style="text-align:left;">
+<main class="home-wrap">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 40px;">
+        <div class="form-container">
             <h2>Rendelés leadása</h2>
             <p>Kérjük, add meg a rendeléshez szükséges adatokat:</p>
 
@@ -66,15 +119,14 @@
                             <option value="">Fizetési mód kiválasztása</option>
                             <option value="card">Bankkártya</option>
                             <option value="cod">Utánvét</option>
-                            <option value="paypal">PayPal</option>
+                            <option value="paypal">Utalás</option>
                         </select>
                     </div>
                 </div>
-                    <form method="GET" action="{{ route('successful.order') }}">
-                        <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
-                </form>
-        </div>
 
+                <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
+            </form>
+        </div>
     </div>
 </main>
 

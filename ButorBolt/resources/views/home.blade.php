@@ -25,6 +25,33 @@
             color: #fff;
             border-color: #000;
         }
+        .modal-bg {
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            max-width: 90%;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top:10px;
+            right:15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -110,7 +137,6 @@
                     <div class="product-info">
                         <h3>{{ $p['name'] }}</h3>
                         <div class="price">{{ number_format($p['price'], 0, '', ' ') }} Ft</div>
-                        {{-- <small style="color: #6c757d;">Kategória: {{ $p['category'] }}</small> --}}
                     </div>
                 </a>
                 <div class="actions" style="padding: 0 14px 14px;">
@@ -132,7 +158,7 @@
     </div>
 </footer>
 
-<div class="modal-bg" id="loginModal" style="display:none;">
+<div class="modal-bg" id="loginModal">
     <div class="modal">
         <span class="modal-close" id="closeModal">&times;</span>
         <h3>Bejelentkezés</h3>
@@ -148,11 +174,43 @@
 
 <script>
     const modal = document.getElementById('loginModal');
+    const btnOpen = document.getElementById('btnOpenLogin');
+    const btnClose = document.getElementById('closeModal');
+    const btnLogin = document.getElementById('loginSubmit');
+    const profileIcon = document.getElementById('profileIcon');
+    const welcomeText = document.getElementById('welcomeText');
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
 
-     searchInput.addEventListener('input', function() {
-         const query = this.value.toLowerCase().trim();
+    btnOpen.addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
+
+
+    btnClose.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+
+    btnLogin.addEventListener('click', () => {
+        const username = document.getElementById('username').value.trim();
+        if (username) {
+            welcomeText.textContent = `Üdv, ${username}!`;
+            modal.style.display = 'none';
+            profileIcon.style.display = 'inline-flex';
+        } else {
+            alert('Kérlek add meg a felhasználóneved!');
+        }
+    });
+
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
         suggestionsBox.innerHTML = '';
 
         if (query === '') {
@@ -180,37 +238,9 @@
         suggestionsBox.style.display = 'block';
     });
 
-     searchInput.addEventListener('blur', () => {
+    searchInput.addEventListener('blur', () => {
         setTimeout(() => suggestionsBox.style.display = 'none', 100);
     });
-
-    if (btnOpen) {
-        btnOpen.addEventListener('click', () => {
-            modal.style.display = 'flex';
-        });
-    }
-     if (btnClose) {
-        btnClose.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-     window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
-
-     if (btnLogin) {
-        btnLogin.addEventListener('click', () => {
-            const username = document.getElementById('username').value.trim();
-            if (username) {
-                welcomeText.textContent = `Üdv, ${username}!`;
-                modal.style.display = 'none';
-                profileIcon.style.display = 'inline-flex';
-            } else {
-                alert('Kérlek add meg a felhasználóneved!');
-            }
-        });
-    }
 
 
     const categoryButtonsContainer = document.getElementById('categoryButtons');
@@ -228,15 +258,10 @@
 
             productCards.forEach(card => {
                 const cardCategory = card.getAttribute('data-category');
-                if (selectedCategory === 'all' || cardCategory === selectedCategory) {
-                    card.style.display = 'flex'; 
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
             });
         }
     });
-
 </script>
 
 </body>
