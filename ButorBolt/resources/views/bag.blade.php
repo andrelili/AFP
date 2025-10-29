@@ -68,7 +68,7 @@
         </form>
           <form method="POST" action="{{ route('bag.order') }}">
             @csrf
-            <button class="btn-nav" style="background:#28a745;color:white;">Rendelés leadása</button>
+            <button class="btn-nav" style="background:#28a745;color:white;">Tovább a rendeléshez</button>
           </form>
         <div style="font-weight:700;font-size:1.1rem;">Összesen: {{ number_format($total,0,'',' ') }} Ft</div>
       </div>
