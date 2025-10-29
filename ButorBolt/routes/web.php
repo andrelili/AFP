@@ -9,6 +9,7 @@ use App\Http\Controllers\SuccessfulOrderController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LoginController;
 
 Route::get('/', [HomeController::class, 'show'])->name('home');
 Route::match(['get', 'post'], '/register', [RegisterController::class, 'register'])->name('register');
@@ -38,3 +39,8 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
 Route::post('/admin/update', [AdminController::class, 'update'])->name('admin.update');
 Route::delete('/admin/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
+
+
+Route::get('/login', [LoginController::class, 'show'])->name('login.show');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

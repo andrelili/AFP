@@ -162,13 +162,22 @@
     <div class="modal">
         <span class="modal-close" id="closeModal">&times;</span>
         <h3>Bejelentkezés</h3>
-        <div class="form-field">
-            <input type="text" id="username" placeholder="Felhasználónév">
-        </div>
-        <div class="form-field">
-            <input type="password" id="password" placeholder="Jelszó">
-        </div>
-        <button class="btn-login" id="loginSubmit">Bejelentkezés</button>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+            <div class="form-field">
+                <input type="text" name="username" id="username" placeholder="Felhasználónév" required>
+            </div>
+            <div class="form-field">
+                <input type="password" name="password" id="password" placeholder="Jelszó" required>
+            </div>
+            @if($errors->any())
+                <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <button class="btn-login" type="submit">Bejelentkezés</button>
+        </form>
     </div>
 </div>
 
@@ -176,38 +185,32 @@
     const modal = document.getElementById('loginModal');
     const btnOpen = document.getElementById('btnOpenLogin');
     const btnClose = document.getElementById('closeModal');
-    const btnLogin = document.getElementById('loginSubmit');
     const profileIcon = document.getElementById('profileIcon');
     const welcomeText = document.getElementById('welcomeText');
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
 
-    btnOpen.addEventListener('click', () => {
-        modal.style.display = 'flex';
-    });
+    if (btnOpen) {
+        btnOpen.addEventListener('click', () => {
+            if (modal) modal.style.display = 'flex';
+        });
+    }
 
-
-    btnClose.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            if (modal) modal.style.display = 'none';
+        });
+    }
 
     window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
+        if (modal && e.target === modal) modal.style.display = 'none';
     });
 
-
-    btnLogin.addEventListener('click', () => {
-        const username = document.getElementById('username').value.trim();
-        if (username) {
-            welcomeText.textContent = `Üdv, ${username}!`;
-            modal.style.display = 'none';
-            profileIcon.style.display = 'inline-flex';
-        } else {
-            alert('Kérlek add meg a felhasználóneved!');
-        }
+    @if($errors->any())
+    document.addEventListener('DOMContentLoaded', function(){
+        if (modal) modal.style.display = 'flex';
     });
-
+    @endif
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();

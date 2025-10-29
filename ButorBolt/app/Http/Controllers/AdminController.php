@@ -19,7 +19,7 @@ class AdminController extends Controller
 
     protected function loadStock()
     {
-        $stockFile = storage_path('stock.json');
+        $stockFile = resource_path('data/stock.json');
         if (!file_exists($stockFile)) {
             return [];
         }
