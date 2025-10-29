@@ -99,137 +99,138 @@
 </head>
 <body>
 
-    <header class="topbar">
-        <div class="left-group">
-            <a href="{{ route('home') }}">
-                <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
-            </a>
-            <div class="menu-icon" title="Menü">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
-            <div class="icon" title="Kedvencek">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
-                </svg>
-            </div>
-
-            <div class="icon" title="Szűrés">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                width="22" height="22"
-                viewBox="0 0 24 24"
-                fill="black">
-                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-                </svg>
-            </div>
+<header class="topbar">
+    <div class="left-group">
+        <a href="{{ route('home') }}">
+            <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
+        </a>
+        <div class="menu-icon" title="Menü">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
 
-        <div class="center-group">
-            <div class="search-box">
-                <input type="text" placeholder="Keresés...">
-            </div>
+        <div class="icon" title="Kedvencek">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+            </svg>
         </div>
 
-        <div class="right-group">
-            <div class="icon" title="Kosár">🛒</div>
-            <div class="profile-circle" title="Profil">👤</div>
-        </div>
-    </header>
-
-    <main class="form-container" style="margin-top:120px;">
-        <h2>Admin kezelőfelület</h2>
-        <button class="btn-nav btn-add" id="btnAddProduct">+ Termék hozzáadása</button>
-
-        <div class="product-grid">
-            @foreach ($products as $p)
-                <div class="product-card">
-                    <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
-                    <h3>{{ $p['name'] }}</h3>
-                    <p><strong>{{ number_format($p['price'], 0, '', ' ') }} Ft</strong></p>
-                    <small>Készlet: {{ $p['stock'] }}</small>
-
-                    <div class="admin-actions">
-                        <form method="POST" action="{{ route('admin.delete', $p['id']) }}" onsubmit="return confirm('Biztosan törlöd a terméket?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-nav btn-delete">🗑️</button>
-                        </form>
-                        <button class="btn-nav btn-edit"
-                                data-id="{{ $p['id'] }}"
-                                data-name="{{ $p['name'] }}"
-                                data-stock="{{ $p['stock'] }}"
-                                data-price="{{ $p['price'] }}">
-                            ✏️
-                        </button>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        @if ($products->isEmpty())
-            <p style="margin-top:20px;">Jelenleg nincsenek termékek az adatbázisban.</p>
-        @endif
-    </main>
-
-    <div class="modal-bg" id="productModal">
-        <div class="modal">
-            <span class="modal-close" id="closeModal">&times;</span>
-            <h3 id="modalTitle">Új termék hozzáadása</h3>
-
-            <form id="productForm" method="POST" action="{{ route('admin.store') }}" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="id" id="productId">
-
-                <div class="form-field">
-                    <input type="text" name="name" id="productName" placeholder="Termék neve" required>
-                </div>
-                <div class="form-field">
-                    <input type="number" name="price" id="productPrice" placeholder="Ár (Ft)" required>
-                </div>
-                <div class="form-field">
-                    <input type="number" name="stock" id="productStock" placeholder="Elérhető mennyiség" required>
-                </div>
-                <div class="form-field">
-                    <input type="file" name="img" id="productImg">
-                </div>
-
-                <button type="submit" class="btn-nav btn-add">Mentés</button>
-            </form>
+        <div class="icon" title="Szűrés">
+            <svg xmlns="http://www.w3.org/2000/svg"
+            width="22" height="22"
+            viewBox="0 0 24 24"
+            fill="black">
+            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+            </svg>
         </div>
     </div>
 
-    <script>
-        const modal = document.getElementById('productModal');
-        const btnAdd = document.getElementById('btnAddProduct');
-        const closeModal = document.getElementById('closeModal');
-        const form = document.getElementById('productForm');
-        const title = document.getElementById('modalTitle');
+    <div class="center-group">
+        <div class="search-box">
+            <input type="text" placeholder="Keresés...">
+        </div>
+    </div>
 
-        btnAdd.addEventListener('click', () => {
-            title.textContent = "Új termék hozzáadása";
-            form.action = "{{ route('admin.store') }}";
-            form.reset();
+    <div class="right-group">
+        <div class="icon" title="Kosár">🛒</div>
+        <div class="profile-circle" title="Profil">👤</div>
+    </div>
+</header>
+
+<main class="form-container" style="margin-top:120px;">
+    <h2>Admin kezelőfelület</h2>
+    <button class="btn-nav btn-add" id="btnAddProduct">+ Termék hozzáadása</button>
+
+    <div class="product-grid">
+        @foreach ($products as $p)
+            <div class="product-card">
+                <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
+                <h3>{{ $p['name'] }}</h3>
+                <p><strong>{{ number_format($p['price'], 0, '', ' ') }} Ft</strong></p>
+                <small>Készlet: {{ $p['stock'] }}</small>
+
+                <div class="admin-actions">
+                    <form method="POST" action="{{ route('admin.delete', $p['id']) }}" onsubmit="return confirm('Biztosan törlöd a terméket?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-nav btn-delete">🗑️</button>
+                    </form>
+                    <button class="btn-nav btn-edit"
+                            data-id="{{ $p['id'] }}"
+                            data-name="{{ $p['name'] }}"
+                            data-stock="{{ $p['stock'] }}"
+                            data-price="{{ $p['price'] }}">
+                        ✏️
+                    </button>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    @if ($products->isEmpty())
+        <p style="margin-top:20px;">Jelenleg nincsenek termékek az adatbázisban.</p>
+    @endif
+</main>
+
+<div class="modal-bg" id="productModal">
+    <div class="modal">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <h3 id="modalTitle">Új termék hozzáadása</h3>
+
+        <form id="productForm" method="POST" action="{{ route('admin.store') }}" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="id" id="productId">
+
+            <div class="form-field">
+                <input type="text" name="name" id="productName" placeholder="Termék neve" required>
+            </div>
+            <div class="form-field">
+                <input type="number" name="price" id="productPrice" placeholder="Ár (Ft)" required>
+            </div>
+            <div class="form-field">
+
+                <input type="number" name="stock" id="productStock" placeholder="Elérhető mennyiség" min="0" step="1" required>
+            </div>
+            <div class="form-field">
+                <input type="file" name="img" id="productImg">
+            </div>
+
+            <button type="submit" class="btn-nav btn-add">Mentés</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('productModal');
+    const btnAdd = document.getElementById('btnAddProduct');
+    const closeModal = document.getElementById('closeModal');
+    const form = document.getElementById('productForm');
+    const title = document.getElementById('modalTitle');
+
+    btnAdd.addEventListener('click', () => {
+        title.textContent = "Új termék hozzáadása";
+        form.action = "{{ route('admin.store') }}";
+        form.reset();
+        modal.style.display = 'flex';
+    });
+
+    closeModal.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            title.textContent = "Termék szerkesztése";
+            form.action = "{{ route('admin.update') }}";
             modal.style.display = 'flex';
+
+            document.getElementById('productId').value = btn.dataset.id;
+            document.getElementById('productName').value = btn.dataset.name;
+            document.getElementById('productPrice').value = btn.dataset.price;
+            document.getElementById('productStock').value = btn.dataset.stock;
         });
-
-        closeModal.addEventListener('click', () => modal.style.display = 'none');
-        window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
-
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => {
-                title.textContent = "Termék szerkesztése";
-                form.action = "{{ route('admin.update') }}";
-                modal.style.display = 'flex';
-
-                document.getElementById('productId').value = btn.dataset.id;
-                document.getElementById('productName').value = btn.dataset.name;
-                document.getElementById('productPrice').value = btn.dataset.price;
-                document.getElementById('productStock').value = btn.dataset.stock;
-            });
-        });
-    </script>
+    });
+</script>
 
 </body>
 </html>

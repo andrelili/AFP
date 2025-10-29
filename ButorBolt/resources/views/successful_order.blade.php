@@ -34,12 +34,6 @@
         </div>
     </div>
 
-    <div class="center-group">
-        <div class="search-box">
-            <input type="text" placeholder="Keresés...">
-        </div>
-    </div>
-
     <div class="right-group">
         <div class="profile-circle" id="profileIcon" title="Profil" style="display:none;">👤</div>
     </div>
