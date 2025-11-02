@@ -9,3 +9,65 @@
     .item-image{flex:1}
     .item-info{flex:1;padding-left:24px}
 }
+
+.rating-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.star-rating {
+    font-size: 2.5rem; 
+    color: #ccc;
+    display: inline-block;
+}
+
+.star-rating span {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating:hover span {
+    color: #ffc107; 
+}
+
+.star-rating span:hover ~ span {
+    color: #ccc;
+}
+
+.star-rating span.selected {
+    color: #ffc107;
+}
+
+.rating-form textarea {
+    width: 100%;
+    box-sizing: border-box; 
+    height: 100px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.review-list {
+    margin-top: 20px;
+}
+.review-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 0;
+}
+
+.review-item .stars {
+    color: #ffc107;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+.review-item p {
+    margin: 5px 0 0;
+}
+.review-item small {
+    color: #777;
+    font-style: italic;
+}
