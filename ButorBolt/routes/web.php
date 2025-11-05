@@ -10,6 +10,8 @@ use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
+
 
 Route::get('/', [HomeController::class, 'show'])->name('home');
 Route::match(['get', 'post'], '/register', [RegisterController::class, 'register'])->name('register');
@@ -49,3 +51,8 @@ Route::get('/favorites', [FavoritesController::class, 'show'])->name('favorites.
 Route::get('/favourites', [FavoritesController::class, 'index'])->name('favourites.index');
 Route::post('/favourites/add/{id}', [FavoritesController::class, 'add'])->name('favourites.add');
 Route::delete('/favourites/{id}', [FavoritesController::class, 'remove'])->name('favourites.remove');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profil/kep', [ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
+});
