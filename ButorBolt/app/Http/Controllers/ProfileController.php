@@ -26,7 +26,7 @@ class ProfileController extends Controller
 
         // validálás
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
             'email' => 'required|email',
             'address' => 'nullable|string|max:255',
         ]);

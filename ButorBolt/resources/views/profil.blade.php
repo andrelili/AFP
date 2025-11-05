@@ -179,9 +179,10 @@
             @csrf
             @method('PUT')
             <div class="form-group">
-                <label for="name">Név</label>
-                <input type="text" id="name" name="name" value="{{ old('name', Auth::user()->name) }}" disabled>
+            <label for="username">Felhasználónév</label>
+            <input type="text" id="username" name="username" value="{{ old('username', Auth::user()->username) }}" disabled>
             </div>
+
 
             <div class="form-group">
                 <label for="email">E-mail cím</label>
