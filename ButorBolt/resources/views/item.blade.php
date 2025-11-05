@@ -54,6 +54,7 @@
 </header>
 
 <main class="home-wrap" style="margin-top:120px;">
+    {{-- TERMÉK ADATLAP --}}
     <div class="item-detail">
         <div class="item-image">
             <img src="{{ $item['img'] }}" alt="{{ $item['name'] }}">
@@ -81,7 +82,109 @@
             <a href="{{ route('home') }}" class="btn-nav">← Vissza a főoldalra</a>
         </div>
     </div>
+
+    {{-- === ÉRTÉKELÉSI SZEKCIÓ KEZDETE === --}}
+    <div class="item-detail rating-section">
+        <h2>Értékelések</h2>
+
+        {{-- Példa értékelések (ezt a backend fogja feltölteni) --}}
+        <div class="review-list">
+            <h4>Korábbi értékelések (Példa)</h4>
+            
+            <div class="review-item">
+                <div class="stars">★★★★☆</div> {{-- 4 csillag --}}
+                <small>Vásárló Neve - 2025-10-28</small>
+                <p>Nagyon kényelmes, bár a színe egy kicsit sötétebb, mint a képen.</p>
+            </div>
+
+            <div class="review-item">
+                <div class="stars">★★★★★</div> {{-- 5 csillag --}}
+                <small>Másik Vásárló - 2025-10-25</small>
+                <p>Tökéletes! Pont ilyet kerestem. Gyors szállítás.</p>
+            </div>
+        </div>
+
+        {{-- Értékelés beküldése űrlap --}}
+        <div class="rating-form" style="margin-top: 30px;">
+            <h4>Értékelés írása</h4>
+            
+            {{-- A backend majd ide helyezi a <form action="..." method="POST"> taget --}}
+            {{-- @csrf --}}
+            
+            {{-- Rejtett mező a csillagok értékének tárolására (1-5) --}}
+            <input type="hidden" name="rating" id="ratingInput" value="0">
+            
+            <div class="star-rating" id="starRating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+            
+            <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
+            
+            {{-- Ezt a gomb stílust a register.css-ből vesszük --}}
+            <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
+            
+            {{-- </form> --}}
+        </div>
+    </div>
+    {{-- === ÉRTÉKELÉSI SZEKCIÓ VÉGE === --}}
+
 </main>
+
+{{-- === JAVASCRIPT A CSILLAGOKHOZ === --}}
+<script>
+    const starRatingContainer = document.getElementById('starRating');
+    const ratingInput = document.getElementById('ratingInput');
+    
+    // Ellenőrizzük, hogy léteznek-e az elemek (ez jó gyakorlat)
+    if (starRatingContainer && ratingInput) {
+        const stars = starRatingContainer.querySelectorAll('span');
+
+        // Kattintás esemény
+        starRatingContainer.addEventListener('click', (e) => {
+            // Ellenőrizzük, hogy biztosan egy csillagra (span) kattintott-e
+            if (e.target.tagName === 'SPAN') {
+                const value = e.target.getAttribute('data-value');
+                ratingInput.value = value; // Beállítjuk a rejtett input értékét
+                
+                // Frissítjük a csillagok 'selected' class-át
+                stars.forEach((star, index) => {
+                    if (index < value) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+            }
+        });
+
+        // Egérrávitel (hover) esemény
+        starRatingContainer.addEventListener('mouseover', (e) => {
+            if (e.target.tagName === 'SPAN') {
+                const value = e.target.getAttribute('data-value');
+                // Színezi az összes csillagot a hover-eltig (inline stílussal)
+                stars.forEach((star, index) => {
+                    if (index < value) {
+                        star.style.color = '#ffc107'; // Sárga
+                    } else {
+                        star.style.color = '#ccc'; // Szürke
+                    }
+                });
+            }
+        });
+
+        // Egér elhagyja a csillagokat (mouseout) esemény
+        starRatingContainer.addEventListener('mouseout', () => {
+            // Visszaállítja a csillagokat a CSS class ('selected') alapján
+            stars.forEach((star) => {
+                star.style.color = ''; // Törli az inline stílust
+            });
+        });
+    }
+</script>
 
 </body>
 </html>

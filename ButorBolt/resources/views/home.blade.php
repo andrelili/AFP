@@ -72,6 +72,8 @@
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
         </div>
+        
+        {{-- SZŰRÉS IKON MARAD --}}
         <div class="icon" title="Szűrés">
             <svg xmlns="http://www.w3.org/2000/svg"
             width="22" height="22"
@@ -83,6 +85,17 @@
     </div>
 
     <div class="center-group">
+        <div class="category-dropdown">
+            <button class="dropdown-toggle" id="categoryDropdownToggle">
+                Kategóriák ▾
+            </button>
+            <div class="dropdown-content" id="categoryDropdownMenu">
+                <a data-category="all">Összes</a>
+                @foreach ($categories as $category)
+                    <a data-category="{{ $category }}">{{ $category }}</a>
+                @endforeach
+            </div>
+        </div>
         <div class="search-box">
             <input type="text" placeholder="Keresés..." id="searchInput">
             <div class="suggestions-box" id="suggestionsBox"></div>
@@ -162,7 +175,8 @@
     <div class="modal">
         <span class="modal-close" id="closeModal">&times;</span>
         <h3>Bejelentkezés</h3>
-        <form method="POST" action="{{ route('login') }}">
+        {{-- MODOSÍTOTT FORM: feltételezzük, hogy van 'login' nevű útvonal --}}
+        <form method="POST" action="{{ Route::has('login') ? route('login') : url('/login') }}">
             @csrf
             <div class="form-field">
                 <input type="text" name="username" id="username" placeholder="Felhasználónév" required>
@@ -172,7 +186,8 @@
             </div>
             @if($errors->any())
                 <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
-                    {{ $errors->first() }}
+                    {{-- Csak az első hibát jelenítjük meg a modalban --}}
+                    {{ $errors->all()[0] }}
                 </div>
             @endif
 
@@ -189,6 +204,7 @@
     const welcomeText = document.getElementById('welcomeText');
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
+    const products = @json($products ?? []);
 
     if (btnOpen) {
         btnOpen.addEventListener('click', () => {
@@ -206,7 +222,8 @@
         if (modal && e.target === modal) modal.style.display = 'none';
     });
 
-    @if($errors->any())
+    {{-- HIBA ESETÉN MEGJELENÍTI A MODALT (frissítve) --}}
+    @if($errors->any() && $errors->hasBag('default'))
     document.addEventListener('DOMContentLoaded', function(){
         if (modal) modal.style.display = 'flex';
     });
@@ -245,26 +262,46 @@
         setTimeout(() => suggestionsBox.style.display = 'none', 100);
     });
 
-
     const categoryButtonsContainer = document.getElementById('categoryButtons');
     const productCards = document.querySelectorAll('.product-card');
     const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
 
-    categoryButtonsContainer.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
-            const selectedCategory = event.target.getAttribute('data-category');
+    if (categoryButtonsContainer) { 
+        categoryButtonsContainer.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const selectedCategory = event.target.getAttribute('data-category');
 
-            categoryButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-            event.target.classList.add('active');
+                categoryButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+                event.target.classList.add('active');
 
-            productCards.forEach(card => {
-                const cardCategory = card.getAttribute('data-category');
-                card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
-            });
-        }
-    });
+                productCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
+                });
+            }
+        });
+    }
+
+    const dropdownMenu = document.getElementById('categoryDropdownMenu');
+
+    if (dropdownMenu) {
+        dropdownMenu.addEventListener('click', (event) => {
+            if (event.target.tagName === 'A') {
+                event.preventDefault(); 
+                
+                const selectedCategory = event.target.getAttribute('data-category');
+                
+                const mainButton = document.querySelector(`#categoryButtons .btn-nav[data-category="${selectedCategory}"]`);
+                
+                if (mainButton) {
+                    mainButton.click();
+                }
+            }
+        });
+    }
+
 </script>
 
 </body>
