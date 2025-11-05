@@ -52,6 +52,58 @@
             font-size: 20px;
             cursor: pointer;
         }
+
+        /* Profil ikon / kép stílus */
+        .profile-menu {
+            position: relative;
+        }
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .profile-circle:hover {
+            background-color: #e0e0e0;
+        }
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            min-width: 150px;
+        }
+        .profile-dropdown a,
+        .profile-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +111,7 @@
 <header class="topbar">
     <div class="left-group">
         <a href="{{ route('home') }}">
-            <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
+            <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="Logo">
         </a>
         <div class="menu-icon" title="Menü">
             <span></span>
@@ -69,17 +121,13 @@
 
         <div class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
         </div>
-        
-        {{-- SZŰRÉS IKON MARAD --}}
+
         <div class="icon" title="Szűrés">
-            <svg xmlns="http://www.w3.org/2000/svg"
-            width="22" height="22"
-            viewBox="0 0 24 24"
-            fill="black">
-            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
+                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
             </svg>
         </div>
     </div>
@@ -113,15 +161,32 @@
             </a>
         </div>
 
-        <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
+        @guest
+            <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
 
-        @if (Route::has('register'))
-            <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
+            @else
+                <a href="{{ url('/register') }}" class="btn-nav">Regisztráció</a>
+            @endif
         @else
-            <a href="{{ url('/register') }}" class="btn-nav">Regisztráció</a>
-        @endif
-
-        <div class="profile-circle" id="profileIcon" title="Profil" style="display:none;">👤</div>
+            <div class="profile-menu">
+                <div class="profile-circle" id="profileToggle">
+                    @if (Auth::user()->profile_picture)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
+                    @else
+                        👤
+                    @endif
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{{ route('profile.show') }}">Profilom</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">Kijelentkezés</button>
+                    </form>
+                </div>
+            </div>
+        @endguest
     </div>
 </header>
 
@@ -175,7 +240,6 @@
     <div class="modal">
         <span class="modal-close" id="closeModal">&times;</span>
         <h3>Bejelentkezés</h3>
-        {{-- MODOSÍTOTT FORM: feltételezzük, hogy van 'login' nevű útvonal --}}
         <form method="POST" action="{{ Route::has('login') ? route('login') : url('/login') }}">
             @csrf
             <div class="form-field">
@@ -186,11 +250,9 @@
             </div>
             @if($errors->any())
                 <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
-                    {{-- Csak az első hibát jelenítjük meg a modalban --}}
                     {{ $errors->all()[0] }}
                 </div>
             @endif
-
             <button class="btn-login" type="submit">Bejelentkezés</button>
         </form>
     </div>
@@ -200,82 +262,57 @@
     const modal = document.getElementById('loginModal');
     const btnOpen = document.getElementById('btnOpenLogin');
     const btnClose = document.getElementById('closeModal');
-    const profileIcon = document.getElementById('profileIcon');
-    const welcomeText = document.getElementById('welcomeText');
+    const profileToggle = document.getElementById('profileToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
     const products = @json($products ?? []);
 
-    if (btnOpen) {
-        btnOpen.addEventListener('click', () => {
-            if (modal) modal.style.display = 'flex';
-        });
-    }
+    if (btnOpen) btnOpen.addEventListener('click', () => modal.style.display = 'flex');
+    if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', e => { if (modal && e.target === modal) modal.style.display = 'none'; });
 
-    if (btnClose) {
-        btnClose.addEventListener('click', () => {
-            if (modal) modal.style.display = 'none';
-        });
-    }
-
-    window.addEventListener('click', (e) => {
-        if (modal && e.target === modal) modal.style.display = 'none';
-    });
-
-    {{-- HIBA ESETÉN MEGJELENÍTI A MODALT (frissítve) --}}
     @if($errors->any() && $errors->hasBag('default'))
-    document.addEventListener('DOMContentLoaded', function(){
-        if (modal) modal.style.display = 'flex';
-    });
+    document.addEventListener('DOMContentLoaded', () => modal.style.display = 'flex');
     @endif
+
+    if (profileToggle) {
+        profileToggle.addEventListener('click', () => {
+            profileDropdown.style.display = (profileDropdown.style.display === 'block') ? 'none' : 'block';
+        });
+        window.addEventListener('click', e => {
+            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    }
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         suggestionsBox.innerHTML = '';
-
-        if (query === '') {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
+        if (query === '') { suggestionsBox.style.display = 'none'; return; }
         const filtered = products.filter(p => p.name.toLowerCase().includes(query));
-
-        if (filtered.length === 0) {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
+        if (filtered.length === 0) { suggestionsBox.style.display = 'none'; return; }
         filtered.forEach(item => {
             const div = document.createElement('div');
             div.classList.add('suggestion-item');
             div.textContent = item.name;
-            div.addEventListener('click', () => {
-                window.location.href = `{{ url('/items') }}/${item.id}`;
-            });
+            div.addEventListener('click', () => { window.location.href = `{{ url('/items') }}/${item.id}`; });
             suggestionsBox.appendChild(div);
         });
-
         suggestionsBox.style.display = 'block';
     });
-
-    searchInput.addEventListener('blur', () => {
-        setTimeout(() => suggestionsBox.style.display = 'none', 100);
-    });
+    searchInput.addEventListener('blur', () => setTimeout(() => suggestionsBox.style.display = 'none', 100));
 
     const categoryButtonsContainer = document.getElementById('categoryButtons');
     const productCards = document.querySelectorAll('.product-card');
     const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
-
-    if (categoryButtonsContainer) { 
+    if (categoryButtonsContainer) {
         categoryButtonsContainer.addEventListener('click', (event) => {
             if (event.target.tagName === 'BUTTON') {
                 const selectedCategory = event.target.getAttribute('data-category');
-
-                categoryButtons.forEach(button => {
-                    button.classList.remove('active');
-                });
+                categoryButtons.forEach(b => b.classList.remove('active'));
                 event.target.classList.add('active');
-
                 productCards.forEach(card => {
                     const cardCategory = card.getAttribute('data-category');
                     card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
@@ -285,23 +322,16 @@
     }
 
     const dropdownMenu = document.getElementById('categoryDropdownMenu');
-
     if (dropdownMenu) {
         dropdownMenu.addEventListener('click', (event) => {
             if (event.target.tagName === 'A') {
-                event.preventDefault(); 
-                
+                event.preventDefault();
                 const selectedCategory = event.target.getAttribute('data-category');
-                
                 const mainButton = document.querySelector(`#categoryButtons .btn-nav[data-category="${selectedCategory}"]`);
-                
-                if (mainButton) {
-                    mainButton.click();
-                }
+                if (mainButton) mainButton.click();
             }
         });
     }
-
 </script>
 
 </body>
