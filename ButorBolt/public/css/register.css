@@ -177,7 +177,18 @@ body {
     cursor: pointer;
     transition: 0.3s;
 }
-
+.btn-admin{
+    background-color: #A31621;
+    color: white;
+    width: 100%;
+    border: none;
+    font-size: 20px;
+    padding: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
 .btn-register:hover,
 .btn-login:hover {
     background-color: #343a40;

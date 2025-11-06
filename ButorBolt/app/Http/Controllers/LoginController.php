@@ -25,7 +25,11 @@ class LoginController extends Controller
 
         if(Auth::attempt($credentials)){
             $request->session()->regenerate();
-            return redirect()->intended(route('home'));
+            
+            if (Auth::user()->is_admin) {
+            return redirect()->route('admin.index');
+        }
+        return redirect()->intended(route('home'));
         }
         return back()->withErrors(['username' => 'Hibás név vagy jelszó.'])->withInput();
     }
