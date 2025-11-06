@@ -254,7 +254,7 @@
                 </div>
             @endif
             <button class="btn-login" type="submit">Bejelentkezés</button>
-            <button class="btn-admin" id="btnAdmin" type="submit">Admin</button>
+            <button class="btn-admin" type="submit" value="1" name="admin_login">Admin</button>
         </form>
     </div>
 </div>
@@ -330,23 +330,6 @@
                 const selectedCategory = event.target.getAttribute('data-category');
                 const mainButton = document.querySelector(`#categoryButtons .btn-nav[data-category="${selectedCategory}"]`);
                 if (mainButton) mainButton.click();
-            }
-        });
-    }
-
-    const btnAdmin = document.getElementById('btnAdmin');
-    const isAuthenticated = {!! json_encode(auth()->check()) !!};
-    const isAdmin = {!! json_encode(optional(auth()->user())->is_admin) !!};
-    if (btnAdmin) {
-        btnAdmin.addEventListener('click', () => {
-            if (isAuthenticated) {
-                if (isAdmin) {
-                    window.location.href = "{{ route('admin.index') }}";
-                } else {
-                    alert('Nincs admin jogosultságod.');
-                }
-            } else {
-                modal.style.display = 'flex';
             }
         });
     }
