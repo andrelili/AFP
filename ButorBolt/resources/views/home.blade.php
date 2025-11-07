@@ -105,23 +105,29 @@
             background-color: #f0f0f0;
         }
         .heart-btn {
-    font-size: 18px;
-    line-height: 1;
-    padding: 6px 10px;
-    background-color: #fff;
+            font-size: 18px;
+            line-height: 1;
+            padding: 6px 10px;
+            background-color: #fff;
+        }
+        .heart-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .heart-btn svg {
+            transition: fill 0.3s ease;
+        }
+        .heart-btn.active svg {
+            fill: black;
+            stroke: black;
+        }
+        .heart-btn.active svg {
+    animation: pulse 1s ease infinite alternate;
 }
 
-.heart-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.heart-btn svg {
-    transition: fill 0.3s ease;
-}
-
-.heart-btn.active svg {
-    fill: black;
-    stroke: black;
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
 }
     </style>
 </head>
@@ -243,38 +249,37 @@
                     </form>
                     <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     @php
-    $isFavourited = isset(session('favourites')[$p['id']]);
-@endphp
+                        $favourites = session('favourites', []);
+                        $isFavourited = isset($favourites[$p['id']]);
+                    @endphp
 
 @auth
-    <button type="button"
-            class="btn-nav heart-btn {{ $isFavourited ? 'active' : '' }}"
-            data-id="{{ $p['id'] }}"
-            data-favourited="{{ $isFavourited ? 'true' : 'false' }}"
-            title="Kedvencekhez adás">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-             viewBox="0 0 24 24" fill="none" stroke="black"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="heart-icon">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1
-                     a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21
-                     l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-        </svg>
-    </button>
+<button type="button"
+        class="btn-nav heart-btn {{ $isFavourited ? 'active' : '' }}"
+        data-id="{{ $p['id'] }}"
+        data-name="{{ $p['name'] }}"
+        data-price="{{ $p['price'] }}"
+        data-img="{{ $p['img'] }}"
+        data-category="{{ $p['category'] }}"
+        data-favourited="{{ $isFavourited ? 'true' : 'false' }}"
+        title="Kedvencekhez adás">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+         viewBox="0 0 24 24" fill="none" stroke="black"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         class="heart-icon">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1
+                 a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21
+                 l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+    </svg>
+</button>
 @else
-    <button type="button"
-            class="btn-nav heart-btn disabled"
-            title="Csak bejelentkezve használható"
-            onclick="showLoginModalWithMessage('Kedvencekhez adáshoz jelentkezz be!')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-             viewBox="0 0 24 24" fill="none" stroke="black"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="heart-icon">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1
-                     a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21
-                     l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-        </svg>
-    </button>
+<button type="button" class="btn-nav heart-btn disabled"
+    title="Csak bejelentkezve használható"
+    onclick="showLoginModalWithMessage('Kedvencekhez adáshoz jelentkezz be!')">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+    </svg>
+</button>
 @endauth
                 </div>
             </div>
@@ -395,36 +400,68 @@
             }
         });
     }
-document.querySelectorAll('.heart-btn:not(.disabled)').forEach(btn => {
-    btn.addEventListener('click', async function () {
-        const productId = this.getAttribute('data-id');
-        const isFavourited = this.getAttribute('data-favourited') === 'true';
-        const url = isFavourited
-            ? `/favourites/${productId}`
-            : `/favourites/add/${productId}`;
-        const method = isFavourited ? 'DELETE' : 'POST';
+document.addEventListener('DOMContentLoaded', () => {
+    const heartButtons = document.querySelectorAll('.heart-btn:not(.disabled)');
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                const newState = !isFavourited;
-                this.setAttribute('data-favourited', newState);
-                this.classList.toggle('active', newState);
-            } else if (response.status === 401) {
-                showLoginModalWithMessage('Kedvencekhez adáshoz jelentkezz be!');
-            } else {
-                alert('Hiba történt a kedvencek módosítása közben.');
-            }
-        } catch (error) {
-            console.error('Hálózati hiba:', error);
+    heartButtons.forEach(btn => {
+        const id = btn.dataset.id;
+        if (localStorage.getItem(`favourite_${id}`)) {
+            btn.classList.add('active');
+            const svg = btn.querySelector('svg path');
+            svg.setAttribute('fill', 'black');
         }
+    });
+    heartButtons.forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const id = this.dataset.id;
+            const isActive = this.classList.contains('active');
+
+            if (isActive) {
+                try {
+                    const response = await fetch(`/favourites/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        this.classList.remove('active');
+                        this.querySelector('svg path').setAttribute('fill', 'none');
+                        localStorage.removeItem(`favourite_${id}`);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+                return;
+            }
+            try {
+                const response = await fetch(`/favourites/add/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: btn.dataset.name,
+                        price: btn.dataset.price,
+                        img: btn.dataset.img,
+                        category: btn.dataset.category
+                    })
+                });
+
+                if (response.ok) {
+                    this.classList.add('active');
+                    this.querySelector('svg path').setAttribute('fill', 'black');
+                    localStorage.setItem(`favourite_${id}`, 'true');
+                } else {
+                    alert('Hiba történt a kedvenchez adás közben.');
+                }
+            } catch (error) {
+                console.error('Hálózati hiba:', error);
+            }
+        });
     });
 });
 function showLoginModalWithMessage(message) {

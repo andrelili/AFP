@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class FavoritesController extends Controller
+class FavouritesController extends Controller
 {
     public function index(Request $request)
     {
         $favourites = $request->session()->get('favourites', []);
         $categories = collect($favourites)->pluck('category')->unique()->values()->all();
-        return view('favourite', [
+        return view('favourites', [
             'favourites' => array_values($favourites),
             'categories' => $categories
         ]);
@@ -41,19 +41,19 @@ class FavoritesController extends Controller
     }
 
     public function remove(Request $request, $id)
-    {
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Bejelentkezés szükséges.'], 401);
-        }
+{
+    $id = (int) $id;
+    $favourites = $request->session()->get('favourites', []);
 
-        $id = (int) $id;
-        $favourites = $request->session()->get('favourites', []);
+    if (isset($favourites[$id])) {
+        unset($favourites[$id]);
+        $request->session()->put('favourites', $favourites);
+    }
 
-        if (isset($favourites[$id])) {
-            unset($favourites[$id]);
-            $request->session()->put('favourites', $favourites);
-        }
-
+    if ($request->expectsJson()) {
         return response()->json(['success' => true]);
     }
+
+    return back()->with('success', 'Eltávolítva a kedvencek közül.');
+}
 }

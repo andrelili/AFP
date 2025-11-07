@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kedvencek</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -35,6 +36,18 @@
             white-space: nowrap;
             margin-top: 100px;
         }
+        .remove-favourite {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.remove-favourite:hover {
+    background-color: #b02a37;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
     </style>
 </head>
 <body>
@@ -111,11 +124,11 @@
                         </div>
                     </a>
                     <div class="actions" style="padding: 0 14px 14px;">
-                        <form method="POST" action="{{ route('favourites.remove', $p['id']) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-nav" style="background-color:#dc3545; color:white;">Eltávolítás</button>
-                        </form>
+                        <button class="btn-nav remove-favourite"
+        data-id="{{ $p['id'] }}"
+        style="background-color:#dc3545; color:white;">
+    Eltávolítás
+</button>
                         <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     </div>
                 </div>
@@ -134,7 +147,6 @@
         <div>© {{ date('Y') }} ButorBolt – Kedvencek</div>
     </div>
 </footer>
-
 <script>
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
@@ -194,6 +206,36 @@
             });
         }
     });
+document.querySelectorAll('.remove-favourite').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        const card = this.closest('.product-card');
+
+        try {
+            const response = await fetch(`/favourites/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                card.style.opacity = "0";
+                card.style.transform = "scale(0.95)";
+                setTimeout(() => card.remove(), 400);
+
+                localStorage.removeItem(`favourite_${id}`);
+            } else {
+                alert('Hiba történt az eltávolításkor.');
+            }
+        } catch (error) {
+            console.error('Hálózati hiba:', error);
+        }
+    });
+});
+</script>
 </script>
 
 </body>
