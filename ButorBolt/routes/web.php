@@ -6,7 +6,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\BagCheckoutController;
 use App\Http\Controllers\SuccessfulOrderController;
-use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\FavouritesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LoginController;
@@ -49,10 +49,10 @@ Route::get('/login', [LoginController::class, 'show'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/favorites', [FavoritesController::class, 'show'])->name('favorites.show');
-Route::get('/favourites', [FavoritesController::class, 'index'])->name('favourites.index');
-Route::post('/favourites/add/{id}', [FavoritesController::class, 'add'])->name('favourites.add');
-Route::delete('/favourites/{id}', [FavoritesController::class, 'remove'])->name('favourites.remove');
+Route::get('/favorites', [FavouritesController::class, 'show'])->name('favorites.show');
+Route::get('/favourites', [FavouritesController::class, 'index'])->name('favourites.index');
+Route::post('/favourites/add/{id}', [FavouritesController::class, 'add'])->name('favourites.add');
+Route::delete('/favourites/{id}', [FavouritesController::class, 'remove'])->name('favourites.remove');
 Route::middleware(['auth'])->group(function () {
     Route::get('/profil', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
