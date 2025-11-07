@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kezdőlap</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -53,7 +54,6 @@
             cursor: pointer;
         }
 
-        /* Profil ikon / kép stílus */
         .profile-menu {
             position: relative;
         }
@@ -104,6 +104,31 @@
         .profile-dropdown button:hover {
             background-color: #f0f0f0;
         }
+        .heart-btn {
+            font-size: 18px;
+            line-height: 1;
+            padding: 6px 10px;
+            background-color: #fff;
+        }
+        .heart-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .heart-btn svg {
+            transition: fill 0.3s ease;
+        }
+        .heart-btn.active svg {
+            fill: black;
+            stroke: black;
+        }
+        .heart-btn.active svg {
+    animation: pulse 1s ease infinite alternate;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
     </style>
 </head>
 <body>
@@ -119,11 +144,11 @@
             <span></span>
         </div>
 
-        <div class="icon" title="Kedvencek">
+        <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
-        </div>
+        </a>
 
         <div class="icon" title="Szűrés">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
@@ -223,6 +248,39 @@
                         <button type="submit" class="btn-nav">Kosárba</button>
                     </form>
                     <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
+                    @php
+                        $favourites = session('favourites', []);
+                        $isFavourited = isset($favourites[$p['id']]);
+                    @endphp
+
+@auth
+<button type="button"
+        class="btn-nav heart-btn {{ $isFavourited ? 'active' : '' }}"
+        data-id="{{ $p['id'] }}"
+        data-name="{{ $p['name'] }}"
+        data-price="{{ $p['price'] }}"
+        data-img="{{ $p['img'] }}"
+        data-category="{{ $p['category'] }}"
+        data-favourited="{{ $isFavourited ? 'true' : 'false' }}"
+        title="Kedvencekhez adás">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+         viewBox="0 0 24 24" fill="none" stroke="black"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         class="heart-icon">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1
+                 a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21
+                 l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+    </svg>
+</button>
+@else
+<button type="button" class="btn-nav heart-btn disabled"
+    title="Csak bejelentkezve használható"
+    onclick="showLoginModalWithMessage('Kedvencekhez adáshoz jelentkezz be!')">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+    </svg>
+</button>
+@endauth
                 </div>
             </div>
             @endforeach
@@ -253,6 +311,11 @@
                     {{ $errors->all()[0] }}
                 </div>
             @endif
+            @if (session('login_required'))
+                <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
+                    {{ session('login_required') }}
+                </div>
+            @endif
             <button class="btn-login" type="submit">Bejelentkezés</button>
         </form>
     </div>
@@ -274,6 +337,11 @@
 
     @if($errors->any() && $errors->hasBag('default'))
     document.addEventListener('DOMContentLoaded', () => modal.style.display = 'flex');
+    @endif
+    @if (session('login_required'))
+    document.addEventListener('DOMContentLoaded', () => {
+        modal.style.display = 'flex';
+    });
     @endif
 
     if (profileToggle) {
@@ -332,6 +400,89 @@
             }
         });
     }
+document.addEventListener('DOMContentLoaded', () => {
+    const heartButtons = document.querySelectorAll('.heart-btn:not(.disabled)');
+
+    heartButtons.forEach(btn => {
+        const id = btn.dataset.id;
+        if (localStorage.getItem(`favourite_${id}`)) {
+            btn.classList.add('active');
+            const svg = btn.querySelector('svg path');
+            svg.setAttribute('fill', 'black');
+        }
+    });
+    heartButtons.forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const id = this.dataset.id;
+            const isActive = this.classList.contains('active');
+
+            if (isActive) {
+                try {
+                    const response = await fetch(`/favourites/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        this.classList.remove('active');
+                        this.querySelector('svg path').setAttribute('fill', 'none');
+                        localStorage.removeItem(`favourite_${id}`);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+                return;
+            }
+            try {
+                const response = await fetch(`/favourites/add/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: btn.dataset.name,
+                        price: btn.dataset.price,
+                        img: btn.dataset.img,
+                        category: btn.dataset.category
+                    })
+                });
+
+                if (response.ok) {
+                    this.classList.add('active');
+                    this.querySelector('svg path').setAttribute('fill', 'black');
+                    localStorage.setItem(`favourite_${id}`, 'true');
+                } else {
+                    alert('Hiba történt a kedvenchez adás közben.');
+                }
+            } catch (error) {
+                console.error('Hálózati hiba:', error);
+            }
+        });
+    });
+});
+function showLoginModalWithMessage(message) {
+    const modal = document.getElementById('loginModal');
+    const errorContainer = modal.querySelector('.modal-error');
+
+    if (errorContainer) {
+        errorContainer.textContent = message;
+    } else {
+
+        const form = modal.querySelector('form');
+        const div = document.createElement('div');
+        div.className = 'modal-error';
+        div.style.color = '#b00020';
+        div.style.marginBottom = '10px';
+        div.textContent = message;
+        form.insertBefore(div, form.firstChild.nextSibling);
+    }
+
+    modal.style.display = 'flex';
+}
 </script>
 
 </body>
