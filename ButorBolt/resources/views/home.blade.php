@@ -188,7 +188,6 @@
 
         @guest
             <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
-
             @if (Route::has('register'))
                 <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
             @else
@@ -196,8 +195,10 @@
             @endif
         @else
             <div class="profile-menu">
-                <div class="profile-circle" id="profileToggle">
-                    @if (Auth::user()->profile_picture)
+                <div class="profile-circle" id="profileToggle" title="Profil">
+                    @if (session('admin_mode') && Auth::user()->is_admin)
+                        <img src="{{ asset('images/adminkep.jpg') }}" alt="Admin" class="profile-img">
+                    @elseif (Auth::user()->profile_picture)
                         <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
                     @else
                         👤

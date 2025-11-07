@@ -26,8 +26,14 @@ class LoginController extends Controller
         if(Auth::attempt($credentials)){
             $request->session()->regenerate();
 
+
         if ($request->has('admin_login')) {
             if (Auth::user()->is_admin) {
+            return redirect()->intended(route('home'));
+            
+        if ($request->has('admin_login')) {
+            if (Auth::user()->is_admin) {
+                session(['admin_mode' => true]);
                 return redirect()->route('admin.index');
         } else {
             Auth::logout();
@@ -35,14 +41,21 @@ class LoginController extends Controller
         }
     }
         return redirect()->intended(route('home'));
+
         }
-        return back()->withErrors(['username' => 'Hibás név vagy jelszó.'])->withInput();
+    }
+        session(['admin_mode' => false]);
+        return redirect()->intended(route('home'));
+
+        }
+            return back()->withErrors(['username' => 'Hibás név vagy jelszó.'])->withInput();
     }
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        session()->forget('admin_mode');
         return redirect()->route('home');
     }
 }
