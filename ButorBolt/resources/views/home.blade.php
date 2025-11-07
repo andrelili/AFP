@@ -119,11 +119,11 @@
             <span></span>
         </div>
 
-        <div class="icon" title="Kedvencek">
+        <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
-        </div>
+        </a>
 
         <div class="icon" title="Szűrés">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">

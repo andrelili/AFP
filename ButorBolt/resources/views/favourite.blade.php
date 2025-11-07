@@ -27,10 +27,13 @@
         }
 
         .no-favourites {
+            grid-column: 1 / -1;
+            width: 100%;
             text-align: center;
-            margin-top: 100px;
             font-size: 1.2rem;
             color: #555;
+            white-space: nowrap;
+            margin-top: 100px;
         }
     </style>
 </head>
@@ -83,7 +86,7 @@
     <section class="hero-card" style="margin-top:120px;">
         <div class="hero-text">
             <h1>Kedvenc termékeid</h1>
-            <p>Itt találod az összes szívezett termékedet – gyors elérés és vásárlás egy helyen.</p>
+            <p>Itt találod az összes szívezett termékedet.</p>
         </div>
     </section>
 
@@ -111,14 +114,14 @@
                         <form method="POST" action="{{ route('favourites.remove', $p['id']) }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-nav" style="background-color:#dc3545; color:white;">Eltávolítás ❤️</button>
+                            <button type="submit" class="btn-nav" style="background-color:#dc3545; color:white;">Eltávolítás</button>
                         </form>
                         <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     </div>
                 </div>
             @empty
                 <div class="no-favourites">
-                    Nincsenek kedvenc termékeid még. ❤️ <br>
+                    Nincsenek kedvenc termékeid még.<br>
                     Böngéssz a <a href="{{ route('home') }}">főoldalon</a> és szívezz ki párat!
                 </div>
             @endforelse
