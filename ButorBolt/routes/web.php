@@ -60,5 +60,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('/items/{id}/review', [ItemController::class, 'addReview'])
-    ->middleware('auth')
     ->name('items.addReview');

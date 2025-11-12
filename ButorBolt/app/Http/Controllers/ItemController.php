@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Review;
 
 class ItemController extends Controller
 {
@@ -99,23 +100,30 @@ class ItemController extends Controller
         return 0;
     }
 
-    public function addReview(Request $request, $id)
+   public function addReview(Request $request, $id)
     {
+        if (!$request->user()) {
+            return redirect()->back()->with('login_required', 'Értékelés írásához jelentkezz be.');
+        }
+
         $request->validate([
-        'rating' => 'required|integer|min:1|max:5',
-        'comment' => 'required|string|max:500',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:500',
         ]);
+
         $review = [
-            'user' => auth()->user()->name ?? 'Vendég',
+            'user' => $request->user()->name ?? 'Vendég',
             'rating' => $request->input('rating'),
             'comment' => $request->input('comment'),
             'date' => now()->format('Y-m-d'),
         ];
 
+        // session-be mentés
         $reviews = session()->get("reviews.$id", []);
         $reviews[] = $review;
         session()->put("reviews.$id", $reviews);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Köszönjük az értékelést!');
     }
+
 }

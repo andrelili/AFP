@@ -46,7 +46,6 @@
     100% { transform: scale(1); }
 }
 
-/* --- profilkép stílusok a fejlécben --- */
 .profile-menu {
     position: relative;
 }
@@ -97,6 +96,65 @@
 .profile-dropdown button:hover {
     background-color: #f0f0f0;
 }
+
+.modal-bg.active {
+    display: flex;
+}
+
+
+.modal-bg {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background: #e9ecef;
+    border: 3px solid black;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    padding: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.modal h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal .form-field input {
+    width: 85%;
+    height: 45px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 0 14px;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 </style>
 </head>
 <body>
@@ -137,7 +195,7 @@
         </div>
 
         @guest
-            <a href="{{ route('login') }}" class="btn-nav">Bejelentkezés</a>
+            <button type="button" class="btn-nav btnOpenLogin">Bejelentkezés</button>
             <a href="{{ route('register') }}" class="btn-nav primary">Regisztráció</a>
         @else
             <div class="profile-menu">
@@ -159,6 +217,34 @@
         @endguest
     </div>
 </header>
+
+<div class="modal-bg" id="loginModal">
+    <div class="modal">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <h3>Bejelentkezés</h3>
+        <form method="POST" action="{{ Route::has('login') ? route('login') : url('/login') }}">
+            @csrf
+            <div class="form-field">
+                <input type="text" name="username" id="username" placeholder="Felhasználónév" required>
+            </div>
+            <div class="form-field">
+                <input type="password" name="password" id="password" placeholder="Jelszó" required>
+            </div>
+            @if($errors->any())
+                <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
+                    {{ $errors->all()[0] }}
+                </div>
+            @endif
+            @if (session('login_required'))
+                <div class="modal-error" style="color:#b00020; margin-bottom:10px;">
+                    {{ session('login_required') }}
+                </div>
+            @endif
+            <button class="btn-login" type="submit">Bejelentkezés</button>
+            <button class="btn-admin" type="submit" value="1" name="admin_login">Admin</button>
+        </form>
+    </div>
+</div>
 
 <main class="home-wrap" style="margin-top:120px;">
     {{-- TERMÉK ADATLAP --}}
@@ -226,36 +312,41 @@
     </div>
 
     {{-- === ÉRTÉKELÉSI SZEKCIÓ === --}}
-    <div class="item-detail rating-section">
-        <h2>Értékelések</h2>
-       <div class="review-list">
-        @php
-            $reviews = session()->get("reviews.{$item['id']}", []);
-        @endphp
-        @foreach($reviews as $rev)
-            <div class="review-item">
-                <div class="stars">{{ str_repeat('★', $rev['rating']) . str_repeat('☆', 5 - $rev['rating']) }}</div>
-                <small>{{ $rev['user'] }} - {{ $rev['date'] }}</small>
-                <p>{{ $rev['comment'] }}</p>
-            </div>
-        @endforeach
-    </div>
-
+    @auth
         <form method="POST" action="{{ url('/items/'.$item['id'].'/review') }}" class="rating-form" style="margin-top: 30px;">
-        @csrf
-        <h4>Értékelés írása</h4>
-        <input type="hidden" name="rating" id="ratingInput" value="0">
-        <div class="star-rating" id="starRating">
-            <span data-value="1">★</span>
-            <span data-value="2">★</span>
-            <span data-value="3">★</span>
-            <span data-value="4">★</span>
-            <span data-value="5">★</span>
+            @csrf
+            <h4>Értékelés írása</h4>
+            <input type="hidden" name="rating" id="ratingInput" value="0">
+            <div class="star-rating" id="starRating">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+            <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
+            <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
+        </form>
+    @else
+        <div class="rating-guest" style="margin-top:30px;">
+            <p>Értékelés íráshoz jelentkezz be.</p>
+            <button type="button" class="btn-nav btnOpenLogin">Bejelentkezés</button>
         </div>
-        <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
-        <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
-    </form>
-</main>
+    @endauth
+@php
+    $reviews = session()->get("reviews.$item[id]", []);
+@endphp
+
+@if(count($reviews) > 0)
+    <h4 style="margin-top:20px;">Felhasználói értékelések:</h4>
+    @foreach($reviews as $review)
+        <div class="review" style="border-top:1px solid #ccc; padding:10px 0;">
+            <strong>{{ $review['user'] }}</strong> - {{ $review['rating'] }}★
+            <p>{{ $review['comment'] }}</p>
+            <small>{{ $review['date'] }}</small>
+        </div>
+    @endforeach
+@endif
 
 {{-- === JAVASCRIPT === --}}
 <script>
@@ -288,53 +379,27 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const heartBtn = document.querySelector('.heart-btn:not(.disabled)');
-    if (!heartBtn) return;
-    const id = heartBtn.dataset.id;
-    if (localStorage.getItem(`favourite_${id}`)) {
-        heartBtn.classList.add('active');
-        heartBtn.querySelector('svg path').setAttribute('fill', 'black');
-    }
-    heartBtn.addEventListener('click', async function() {
-        const isActive = this.classList.contains('active');
-        if (isActive) {
-            const response = await fetch(`/favourites/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            });
-            if (response.ok) {
-                this.classList.remove('active');
-                this.querySelector('svg path').setAttribute('fill', 'none');
-                localStorage.removeItem(`favourite_${id}`);
-            }
-            return;
-        }
-        const response = await fetch(`/favourites/add/${id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                name: heartBtn.dataset.name,
-                price: heartBtn.dataset.price,
-                img: heartBtn.dataset.img,
-                category: heartBtn.dataset.category
-            })
+    const loginModal = document.getElementById('loginModal');
+    const openLoginBtns = document.querySelectorAll('.btnOpenLogin');
+    const closeBtn = document.getElementById('closeModal');
+
+    openLoginBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            loginModal.classList.add('active'); // show modal
         });
-        if (response.ok) {
-            this.classList.add('active');
-            this.querySelector('svg path').setAttribute('fill', 'black');
-            localStorage.setItem(`favourite_${id}`, 'true');
-        } else {
-            alert('Hiba történt a kedvenchez adás közben.');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        loginModal.classList.remove('active'); // close modal
+    });
+
+    window.addEventListener('click', e => {
+        if(e.target === loginModal) {
+            loginModal.classList.remove('active'); // close when clicking outside
         }
     });
 });
+
 </script>
 
 <script>
@@ -352,6 +417,13 @@ if (profileToggle) {
     });
 }
 </script>
-
+@if(session('login_required') || $errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('loginModal');
+        if(modal) modal.classList.add('active');
+    });
+</script>
+@endif
 </body>
 </html>
