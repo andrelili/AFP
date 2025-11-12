@@ -122,13 +122,22 @@
             stroke: black;
         }
         .heart-btn.active svg {
-    animation: pulse 1s ease infinite alternate;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.1); }
-}
+            animation: pulse 1s ease infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        .dropdown-content a {
+            display: block;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        .dropdown-content a:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -146,10 +155,17 @@
     </div>
 
         <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
-    <div class="icon" title="Szűrés">
+    <div class="icon" title="Szűrés" id ="filterBtn" style="position: relative; cursor: pointer;">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
             <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
         </svg>
+                    <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
+                <a data-sort="price-asc">Ár szerint növekvő</a>
+                <a data-sort="price-desc">Ár szerint csökkenő</a>
+                <a data-sort="name-asc">Név szerint (A–Z)</a>
+                <a data-sort="name-desc">Név szerint (Z–A)</a>
+                <a data-sort="favourite-desc">Legkedveltebb</a>
+            </div>
     </div>
     <div class="search-box">
         <input type="text" placeholder="Keresés..." id="searchInput">
@@ -224,7 +240,7 @@
     <section class="section">
         <div class="product-grid">
             @foreach ($products as $p)
-            <div class="product-card" data-category="{{ $p['category'] }}">
+            <div class="product-card" data-category="{{ $p['category'] }}" data-price="{{ $p['price'] }}" data-name="{{ $p['name'] }}">
                 <a href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}"
                    style="text-decoration: none; color: inherit;">
                     <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
@@ -314,84 +330,127 @@
 </div>
 
 <script>
-    const modal = document.getElementById('loginModal');
-    const btnOpen = document.getElementById('btnOpenLogin');
-    const btnClose = document.getElementById('closeModal');
-    const profileToggle = document.getElementById('profileToggle');
-    const profileDropdown = document.getElementById('profileDropdown');
-    const searchInput = document.getElementById('searchInput');
-    const suggestionsBox = document.getElementById('suggestionsBox');
-    const products = @json($products ?? []);
+const modal = document.getElementById('loginModal');
+const btnOpen = document.getElementById('btnOpenLogin');
+const btnClose = document.getElementById('closeModal');
+const profileToggle = document.getElementById('profileToggle');
+const profileDropdown = document.getElementById('profileDropdown');
+const searchInput = document.getElementById('searchInput');
+const suggestionsBox = document.getElementById('suggestionsBox');
+const products = @json($products ?? []);
 
-    if (btnOpen) btnOpen.addEventListener('click', () => modal.style.display = 'flex');
-    if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', e => { if (modal && e.target === modal) modal.style.display = 'none'; });
+if (btnOpen) btnOpen.addEventListener('click', () => modal.style.display = 'flex');
+if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
+window.addEventListener('click', e => { if (modal && e.target === modal) modal.style.display = 'none'; });
 
-    @if($errors->any() && $errors->hasBag('default'))
-    document.addEventListener('DOMContentLoaded', () => modal.style.display = 'flex');
-    @endif
-    @if (session('login_required'))
-    document.addEventListener('DOMContentLoaded', () => {
-        modal.style.display = 'flex';
+@if($errors->any() && $errors->hasBag('default'))
+document.addEventListener('DOMContentLoaded', () => modal.style.display = 'flex');
+@endif
+@if (session('login_required'))
+document.addEventListener('DOMContentLoaded', () => { modal.style.display = 'flex'; });
+@endif
+
+if (profileToggle) {
+    profileToggle.addEventListener('click', () => {
+        profileDropdown.style.display = (profileDropdown.style.display === 'block') ? 'none' : 'block';
     });
-    @endif
-
-    if (profileToggle) {
-        profileToggle.addEventListener('click', () => {
-            profileDropdown.style.display = (profileDropdown.style.display === 'block') ? 'none' : 'block';
-        });
-        window.addEventListener('click', e => {
-            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.style.display = 'none';
-            }
-        });
-    }
-
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        suggestionsBox.innerHTML = '';
-        if (query === '') { suggestionsBox.style.display = 'none'; return; }
-        const filtered = products.filter(p => p.name.toLowerCase().includes(query));
-        if (filtered.length === 0) { suggestionsBox.style.display = 'none'; return; }
-        filtered.forEach(item => {
-            const div = document.createElement('div');
-            div.classList.add('suggestion-item');
-            div.textContent = item.name;
-            div.addEventListener('click', () => { window.location.href = `{{ url('/items') }}/${item.id}`; });
-            suggestionsBox.appendChild(div);
-        });
-        suggestionsBox.style.display = 'block';
+    window.addEventListener('click', e => {
+        if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.style.display = 'none';
+        }
     });
-    searchInput.addEventListener('blur', () => setTimeout(() => suggestionsBox.style.display = 'none', 100));
+}
 
-    const categoryButtonsContainer = document.getElementById('categoryButtons');
-    const productCards = document.querySelectorAll('.product-card');
-    const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
-    if (categoryButtonsContainer) {
-        categoryButtonsContainer.addEventListener('click', (event) => {
-            if (event.target.tagName === 'BUTTON') {
-                const selectedCategory = event.target.getAttribute('data-category');
-                categoryButtons.forEach(b => b.classList.remove('active'));
-                event.target.classList.add('active');
-                productCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
-                });
-            }
-        });
-    }
+searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase().trim();
+    suggestionsBox.innerHTML = '';
+    if (query === '') { suggestionsBox.style.display = 'none'; return; }
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+    if (filtered.length === 0) { suggestionsBox.style.display = 'none'; return; }
+    filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.classList.add('suggestion-item');
+        div.textContent = item.name;
+        div.addEventListener('click', () => { window.location.href = `{{ url('/items') }}/${item.id}`; });
+        suggestionsBox.appendChild(div);
+    });
+    suggestionsBox.style.display = 'block';
+});
+searchInput.addEventListener('blur', () => setTimeout(() => suggestionsBox.style.display = 'none', 100));
 
-    const dropdownMenu = document.getElementById('categoryDropdownMenu');
-    if (dropdownMenu) {
-        dropdownMenu.addEventListener('click', (event) => {
-            if (event.target.tagName === 'A') {
-                event.preventDefault();
-                const selectedCategory = event.target.getAttribute('data-category');
-                const mainButton = document.querySelector(`#categoryButtons .btn-nav[data-category="${selectedCategory}"]`);
-                if (mainButton) mainButton.click();
+const categoryButtonsContainer = document.getElementById('categoryButtons');
+const productCards = document.querySelectorAll('.product-card');
+const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
+if (categoryButtonsContainer) {
+    categoryButtonsContainer.addEventListener('click', (event) => {
+        if (event.target.tagName === 'BUTTON') {
+            const selectedCategory = event.target.getAttribute('data-category');
+            categoryButtons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            productCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory) ? 'flex' : 'none';
+            });
+        }
+    });
+}
+
+const dropdownMenu = document.getElementById('categoryDropdownMenu');
+if (dropdownMenu) {
+    dropdownMenu.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            event.preventDefault();
+            const selectedCategory = event.target.getAttribute('data-category');
+            const mainButton = document.querySelector(`#categoryButtons .btn-nav[data-category="${selectedCategory}"]`);
+            if (mainButton) mainButton.click();
+        }
+    });
+}
+
+// Szűrő / rendezés
+const filterBtn = document.getElementById('filterBtn');
+const filterDropdown = document.getElementById('filterDropdown');
+
+if (filterBtn && filterDropdown) {
+    filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterDropdown.style.display = (filterDropdown.style.display === 'block') ? 'none' : 'block';
+    });
+    window.addEventListener('click', (e) => { if (!filterBtn.contains(e.target)) filterDropdown.style.display = 'none'; });
+
+    filterDropdown.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sortType = a.dataset.sort;
+            const grid = document.querySelector('.product-grid');
+            let cards = Array.from(grid.querySelectorAll('.product-card'));
+            switch(sortType) {
+                case 'price-asc':
+                    cards.sort((a,b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+                    break;
+                case 'price-desc':
+                    cards.sort((a,b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+                    break;
+                case 'name-asc':
+                    cards.sort((a,b) => a.dataset.name.localeCompare(b.dataset.name));
+                    break;
+                case 'name-desc':
+                    cards.sort((a,b) => b.dataset.name.localeCompare(a.dataset.name));
+                    break;
+                case 'favourite-desc':
+                    cards.sort((a,b) => {
+                        const favA = a.querySelector('.heart-btn.active') ? 1 : 0;
+                        const favB = b.querySelector('.heart-btn.active') ? 1 : 0;
+                        return favB - favA;
+                    });
+                    break;
             }
+            cards.forEach(c => grid.appendChild(c));
+            filterDropdown.style.display = 'none';
         });
-    }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const heartButtons = document.querySelectorAll('.heart-btn:not(.disabled)');
 
@@ -407,42 +466,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', async function () {
             const id = this.dataset.id;
             const isActive = this.classList.contains('active');
-
             if (isActive) {
                 try {
                     const response = await fetch(`/favourites/${id}`, {
                         method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        }
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' }
                     });
                     if (response.ok) {
                         this.classList.remove('active');
                         this.querySelector('svg path').setAttribute('fill', 'none');
                         localStorage.removeItem(`favourite_${id}`);
                     }
-                } catch (err) {
-                    console.error(err);
-                }
+                } catch (err) { console.error(err); }
                 return;
             }
             try {
                 const response = await fetch(`/favourites/add/${id}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: btn.dataset.name,
-                        price: btn.dataset.price,
-                        img: btn.dataset.img,
-                        category: btn.dataset.category
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                    body: JSON.stringify({ name: btn.dataset.name, price: btn.dataset.price, img: btn.dataset.img, category: btn.dataset.category })
                 });
-
                 if (response.ok) {
                     this.classList.add('active');
                     this.querySelector('svg path').setAttribute('fill', 'black');
@@ -450,20 +493,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     alert('Hiba történt a kedvenchez adás közben.');
                 }
-            } catch (error) {
-                console.error('Hálózati hiba:', error);
-            }
+            } catch (error) { console.error('Hálózati hiba:', error); }
         });
     });
 });
+
 function showLoginModalWithMessage(message) {
     const modal = document.getElementById('loginModal');
     const errorContainer = modal.querySelector('.modal-error');
-
     if (errorContainer) {
         errorContainer.textContent = message;
     } else {
-
         const form = modal.querySelector('form');
         const div = document.createElement('div');
         div.className = 'modal-error';
@@ -472,7 +512,6 @@ function showLoginModalWithMessage(message) {
         div.textContent = message;
         form.insertBefore(div, form.firstChild.nextSibling);
     }
-
     modal.style.display = 'flex';
 }
 </script>
