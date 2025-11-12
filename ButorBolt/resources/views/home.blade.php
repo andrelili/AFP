@@ -176,6 +176,9 @@
     </div>
 
     <div class="right-group">
+        @if(auth()->check() && session('admin_mode') && auth()->user()->is_admin)
+            <a href="{{route('admin.index')}}" class="btn-nav btn-edit" style="margin-left: 10px;">Szerkesztés</a>
+        @endif
         <div class="icon" title="Kosár">
             <a href="{{ Route::has('bag.index') ? route('bag.index') : url('/bag') }}" style="text-decoration:none; color:inherit;">
                 🛒
@@ -205,13 +208,18 @@
                     @endif
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
-                    <a href="{{ route('profile.show') }}">Profilom</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit">Kijelentkezés</button>
-                    </form>
-                </div>
-            </div>
+                    @if (session('admin_mode') && Auth::user()->is_admin)
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Kijelentkezés</button>
+                        </form>
+                    @else
+                        <a href="{{ route('profile.show') }}">Profilom</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Kijelentkezés</button>
+                        </form>
+                    @endif
         @endguest
     </div>
 </header>
