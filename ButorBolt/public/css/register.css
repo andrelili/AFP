@@ -406,3 +406,13 @@ body {
 .category-dropdown:hover .dropdown-content {
     display: block;
 }
+.product-card .actions form {
+    flex-grow: 1;
+    display: flex; /* Hogy a benne lévő button is ki tudja tölteni a formot */
+}
+.product-card .actions form .btn-nav {
+    width: 100%;
+}
+.product-card .actions .btn-nav:not(.heart-btn) {
+    flex-grow: 1;
+}

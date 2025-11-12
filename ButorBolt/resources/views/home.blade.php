@@ -236,7 +236,7 @@
                 <div class="actions" style="padding: 0 14px 14px;">
                     <form method="POST" action="{{ Route::has('bag.add') ? route('bag.add', ['id' => $p['id']]) : url('/bag/add/'.$p['id']) }}">
                         @csrf
-                        <button type="submit" class="btn-nav">Kosárba</button>
+                        <button type="submit" class="btn-nav" style="width: 100%;">Kosárba</button>
                     </form>
                     <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     @php
