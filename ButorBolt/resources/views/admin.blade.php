@@ -155,27 +155,20 @@
         <a href="{{ route('home') }}">
             <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
         </a>
-        <div class="menu-icon" title="Menü">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+    </div>
 
-        <div class="icon" title="Szűrés">
-            <svg xmlns="http://www.w3.org/2000/svg"
-            width="22" height="22"
-            viewBox="0 0 24 24"
-            fill="black">
+
+        <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
+    <div class="icon" title="Szűrés">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
             <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-            </svg>
-        </div>
+        </svg>
     </div>
-
-    <div class="center-group">
-        <div class="search-box">
-            <input type="text" placeholder="Keresés...">
-        </div>
+    <div class="search-box">
+        <input type="text" placeholder="Keresés..." id="searchInput">
+        <div class="suggestions-box" id="suggestionsBox"></div>
     </div>
+</div>
 <div class="right-group">
         <a href="{{ route('home') }}" class="btn-nav btn-preview" title="Előnézet">Előnézet</a>
 
