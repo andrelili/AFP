@@ -147,50 +147,31 @@
         <a href="{{ route('home') }}">
             <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="Logo">
         </a>
-        <div class="menu-icon" title="Menü">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-
         <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
         </a>
+    </div>
 
-        <!-- Szűrő ikon és dropdown -->
-        <div class="icon" title="Szűrés" id="filterBtn" style="position: relative; cursor: pointer;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
-                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-            </svg>
-            <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
+        <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
+    <div class="icon" title="Szűrés" id ="filterBtn" style="position: relative; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
+            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+        </svg>
+                    <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
                 <a data-sort="price-asc">Ár szerint növekvő</a>
                 <a data-sort="price-desc">Ár szerint csökkenő</a>
                 <a data-sort="name-asc">Név szerint (A–Z)</a>
                 <a data-sort="name-desc">Név szerint (Z–A)</a>
                 <a data-sort="favourite-desc">Legkedveltebb</a>
             </div>
-        </div>
     </div>
-
-    <div class="center-group">
-        <div class="category-dropdown">
-            <button class="dropdown-toggle" id="categoryDropdownToggle">
-                Kategóriák ▾
-            </button>
-            <div class="dropdown-content" id="categoryDropdownMenu">
-                <a data-category="all">Összes</a>
-                @foreach ($categories as $category)
-                    <a data-category="{{ $category }}">{{ $category }}</a>
-                @endforeach
-            </div>
-        </div>
-        <div class="search-box">
-            <input type="text" placeholder="Keresés..." id="searchInput">
-            <div class="suggestions-box" id="suggestionsBox"></div>
-        </div>
+    <div class="search-box">
+        <input type="text" placeholder="Keresés..." id="searchInput">
+        <div class="suggestions-box" id="suggestionsBox"></div>
     </div>
+</div>
 
     <div class="right-group">
         @if(auth()->check() && session('admin_mode') && auth()->user()->is_admin)
@@ -271,7 +252,7 @@
                 <div class="actions" style="padding: 0 14px 14px;">
                     <form method="POST" action="{{ Route::has('bag.add') ? route('bag.add', ['id' => $p['id']]) : url('/bag/add/'.$p['id']) }}">
                         @csrf
-                        <button type="submit" class="btn-nav">Kosárba</button>
+                        <button type="submit" class="btn-nav" style="width: 100%;">Kosárba</button>
                     </form>
                     <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
                     @php
@@ -534,6 +515,5 @@ function showLoginModalWithMessage(message) {
     modal.style.display = 'flex';
 }
 </script>
-
 </body>
 </html>
