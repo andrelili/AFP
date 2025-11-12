@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $item['name'] }} – ButorBolt</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
-    <link rel="stylesheet" href="{{asset('css/item.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/item.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
 .heart-btn {
@@ -45,6 +45,58 @@
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
 }
+
+/* --- profilkép stílusok a fejlécben --- */
+.profile-menu {
+    position: relative;
+}
+.profile-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.profile-circle:hover {
+    background-color: #e0e0e0;
+}
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    min-width: 150px;
+}
+.profile-dropdown a,
+.profile-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+}
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+    background-color: #f0f0f0;
+}
 </style>
 </head>
 <body>
@@ -57,17 +109,14 @@
         <div class="menu-icon" title="Menü">
             <span></span><span></span><span></span>
         </div>
-        <a href="{{route('favourites.index')}}" class="icon" title="Kedvencek">
+        <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
         </a>
         <div class="icon" title="Szűrés">
-            <svg xmlns="http://www.w3.org/2000/svg"
-            width="22" height="22"
-            viewBox="0 0 24 24"
-            fill="black">
-            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
+                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
             </svg>
         </div>
     </div>
@@ -78,18 +127,36 @@
 
     <div class="right-group">
         <div class="icon" title="Kosár">
-  <a href="{{ route('bag.index') }}" style="text-decoration:none; color:inherit;">
-    🛒
-    @php $cnt = session('cart_count', collect(session('cart', []))->sum('qty')); @endphp
-    @if($cnt > 0)
-      <span style="font-weight:700;">({{ $cnt }})</span>
-    @endif
-  </a>
-</div>
+            <a href="{{ route('bag.index') }}" style="text-decoration:none; color:inherit;">
+                🛒
+                @php $cnt = session('cart_count', collect(session('cart', []))->sum('qty')); @endphp
+                @if($cnt > 0)
+                    <span style="font-weight:700;">({{ $cnt }})</span>
+                @endif
+            </a>
+        </div>
 
-        <a href="{{ url('/login') }}" class="btn-nav">Bejelentkezés</a>
-        <a href="{{ url('/register') }}" class="btn-nav primary">Regisztráció</a>
-        <div class="profile-circle" title="Profil">👤</div>
+        @guest
+            <a href="{{ route('login') }}" class="btn-nav">Bejelentkezés</a>
+            <a href="{{ route('register') }}" class="btn-nav primary">Regisztráció</a>
+        @else
+            <div class="profile-menu">
+                <div class="profile-circle" id="profileToggle">
+                    @if (Auth::user()->profile_picture)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
+                    @else
+                        👤
+                    @endif
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{{ route('profile.show') }}">Profilom</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">Kijelentkezés</button>
+                    </form>
+                </div>
+            </div>
+        @endguest
     </div>
 </header>
 
@@ -158,37 +225,26 @@
         </div>
     </div>
 
-    {{-- === ÉRTÉKELÉSI SZEKCIÓ KEZDETE === --}}
+    {{-- === ÉRTÉKELÉSI SZEKCIÓ === --}}
     <div class="item-detail rating-section">
         <h2>Értékelések</h2>
-
-        {{-- Példa értékelések (ezt a backend fogja feltölteni) --}}
         <div class="review-list">
             <h4>Korábbi értékelések (Példa)</h4>
-
             <div class="review-item">
-                <div class="stars">★★★★☆</div> {{-- 4 csillag --}}
+                <div class="stars">★★★★☆</div>
                 <small>Vásárló Neve - 2025-10-28</small>
                 <p>Nagyon kényelmes, bár a színe egy kicsit sötétebb, mint a képen.</p>
             </div>
-
             <div class="review-item">
-                <div class="stars">★★★★★</div> {{-- 5 csillag --}}
+                <div class="stars">★★★★★</div>
                 <small>Másik Vásárló - 2025-10-25</small>
                 <p>Tökéletes! Pont ilyet kerestem. Gyors szállítás.</p>
             </div>
         </div>
 
-        {{-- Értékelés beküldése űrlap --}}
         <div class="rating-form" style="margin-top: 30px;">
             <h4>Értékelés írása</h4>
-
-            {{-- A backend majd ide helyezi a <form action="..." method="POST"> taget --}}
-            {{-- @csrf --}}
-
-            {{-- Rejtett mező a csillagok értékének tárolására (1-5) --}}
             <input type="hidden" name="rating" id="ratingInput" value="0">
-
             <div class="star-rating" id="starRating">
                 <span data-value="1">★</span>
                 <span data-value="2">★</span>
@@ -196,80 +252,53 @@
                 <span data-value="4">★</span>
                 <span data-value="5">★</span>
             </div>
-
             <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
-
-            {{-- Ezt a gomb stílust a register.css-ből vesszük --}}
             <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
-
-            {{-- </form> --}}
         </div>
     </div>
-    {{-- === ÉRTÉKELÉSI SZEKCIÓ VÉGE === --}}
-
 </main>
 
-{{-- === JAVASCRIPT A CSILLAGOKHOZ === --}}
+{{-- === JAVASCRIPT === --}}
 <script>
     const starRatingContainer = document.getElementById('starRating');
     const ratingInput = document.getElementById('ratingInput');
-
     if (starRatingContainer && ratingInput) {
         const stars = starRatingContainer.querySelectorAll('span');
-
         starRatingContainer.addEventListener('click', (e) => {
             if (e.target.tagName === 'SPAN') {
                 const value = e.target.getAttribute('data-value');
                 ratingInput.value = value;
-
                 stars.forEach((star, index) => {
-                    if (index < value) {
-                        star.classList.add('selected');
-                    } else {
-                        star.classList.remove('selected');
-                    }
+                    star.classList.toggle('selected', index < value);
                 });
             }
         });
-
         starRatingContainer.addEventListener('mouseover', (e) => {
             if (e.target.tagName === 'SPAN') {
                 const value = e.target.getAttribute('data-value');
                 stars.forEach((star, index) => {
-                    if (index < value) {
-                        star.style.color = '#ffc107';
-                    } else {
-                        star.style.color = '#ccc';
-                    }
+                    star.style.color = index < value ? '#ffc107' : '#ccc';
                 });
             }
         });
-
         starRatingContainer.addEventListener('mouseout', () => {
-            stars.forEach((star) => {
-                star.style.color = '';
-            });
+            stars.forEach((star) => { star.style.color = ''; });
         });
     }
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const heartBtn = document.querySelector('.heart-btn:not(.disabled)');
     if (!heartBtn) return;
-
     const id = heartBtn.dataset.id;
-
-    // Ha már kedvencek között van, állítsd be feketére
     if (localStorage.getItem(`favourite_${id}`)) {
         heartBtn.classList.add('active');
         heartBtn.querySelector('svg path').setAttribute('fill', 'black');
     }
-
     heartBtn.addEventListener('click', async function() {
         const isActive = this.classList.contains('active');
-
         if (isActive) {
-            // Törlés
             const response = await fetch(`/favourites/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -284,8 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
-
-        // Hozzáadás
         const response = await fetch(`/favourites/add/${id}`, {
             method: 'POST',
             headers: {
@@ -300,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: heartBtn.dataset.category
             })
         });
-
         if (response.ok) {
             this.classList.add('active');
             this.querySelector('svg path').setAttribute('fill', 'black');
@@ -311,5 +337,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+
+<script>
+const profileToggle = document.getElementById('profileToggle');
+const profileDropdown = document.getElementById('profileDropdown');
+if (profileToggle) {
+    profileToggle.addEventListener('click', () => {
+        profileDropdown.style.display =
+            profileDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    window.addEventListener('click', e => {
+        if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.style.display = 'none';
+        }
+    });
+}
+</script>
+
 </body>
 </html>
