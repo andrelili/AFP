@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kedvencek</title>
+    <title>Kedvencek – ButorBolt</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <style>
@@ -36,18 +36,59 @@
             white-space: nowrap;
             margin-top: 100px;
         }
-        .remove-favourite {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
-}
 
-.remove-favourite:hover {
-    background-color: #b02a37;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+        .remove-favourite {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .remove-favourite:hover {
+            background-color: #b02a37;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .profile-dropdown a, .profile-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            color: black;
+        }
+
+        .profile-dropdown a:hover, .profile-dropdown button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .profile-menu {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +132,27 @@
                 @endif
             </a>
         </div>
-        <div class="profile-circle" title="Profil">👤</div>
+
+        @auth
+            <div class="profile-menu">
+                <div class="profile-circle" id="profileToggle">
+                    @if (Auth::user()->profile_picture)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
+                    @else
+                        👤
+                    @endif
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{{ route('profile.show') }}">Profilom</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">Kijelentkezés</button>
+                    </form>
+                </div>
+            </div>
+        @else
+            <div class="profile-circle" title="Profil">👤</div>
+        @endauth
     </div>
 </header>
 
@@ -114,8 +175,7 @@
         <div class="product-grid">
             @forelse ($favourites as $p)
                 <div class="product-card" data-category="{{ $p['category'] }}">
-                    <a href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}"
-                       style="text-decoration: none; color: inherit;">
+                    <a href="{{ route('items.show', ['id' => $p['id']]) }}" style="text-decoration: none; color: inherit;">
                         <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
                         <div class="product-info">
                             <h3>{{ $p['name'] }}</h3>
@@ -124,12 +184,8 @@
                         </div>
                     </a>
                     <div class="actions" style="padding: 0 14px 14px;">
-                        <button class="btn-nav remove-favourite"
-        data-id="{{ $p['id'] }}"
-        style="background-color:#dc3545; color:white;">
-    Eltávolítás
-</button>
-                        <a class="btn-nav" href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}">Megnézem</a>
+                        <button class="btn-nav remove-favourite" data-id="{{ $p['id'] }}">Eltávolítás</button>
+                        <a class="btn-nav" href="{{ route('items.show', ['id' => $p['id']]) }}">Megnézem</a>
                     </div>
                 </div>
             @empty
@@ -147,13 +203,28 @@
         <div>© {{ date('Y') }} ButorBolt – Kedvencek</div>
     </div>
 </footer>
+
 <script>
+    // Profilmenü nyitása / zárása
+    const profileToggle = document.getElementById('profileToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+    if (profileToggle) {
+        profileToggle.addEventListener('click', () => {
+            profileDropdown.style.display =
+                profileDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', (e) => {
+            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    }
+
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
     const categoryButtonsContainer = document.getElementById('categoryButtons');
     const productCards = document.querySelectorAll('.product-card');
     const categoryButtons = categoryButtonsContainer.querySelectorAll('.btn-nav');
-
     const products = @json($favourites);
 
     searchInput.addEventListener('input', function() {
@@ -166,7 +237,6 @@
         }
 
         const filtered = products.filter(p => p.name.toLowerCase().includes(query));
-
         if (filtered.length === 0) {
             suggestionsBox.style.display = 'none';
             return;
@@ -192,50 +262,44 @@
     categoryButtonsContainer.addEventListener('click', (event) => {
         if (event.target.tagName === 'BUTTON') {
             const selectedCategory = event.target.getAttribute('data-category');
-
             categoryButtons.forEach(button => button.classList.remove('active'));
             event.target.classList.add('active');
-
             productCards.forEach(card => {
                 const cardCategory = card.getAttribute('data-category');
-                if (selectedCategory === 'all' || cardCategory === selectedCategory) {
-                    card.style.display = 'flex';
+                card.style.display = (selectedCategory === 'all' || cardCategory === selectedCategory)
+                    ? 'flex'
+                    : 'none';
+            });
+        }
+    });
+
+    document.querySelectorAll('.remove-favourite').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const id = this.dataset.id;
+            const card = this.closest('.product-card');
+            try {
+                const response = await fetch(`/favourites/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                    card.style.opacity = "0";
+                    card.style.transform = "scale(0.95)";
+                    setTimeout(() => card.remove(), 400);
+                    localStorage.removeItem(`favourite_${id}`);
                 } else {
-                    card.style.display = 'none';
+                    alert('Hiba történt az eltávolításkor.');
                 }
-            });
-        }
-    });
-document.querySelectorAll('.remove-favourite').forEach(btn => {
-    btn.addEventListener('click', async function() {
-        const id = this.dataset.id;
-        const card = this.closest('.product-card');
-
-        try {
-            const response = await fetch(`/favourites/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                card.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-                card.style.opacity = "0";
-                card.style.transform = "scale(0.95)";
-                setTimeout(() => card.remove(), 400);
-
-                localStorage.removeItem(`favourite_${id}`);
-            } else {
-                alert('Hiba történt az eltávolításkor.');
+            } catch (error) {
+                console.error('Hálózati hiba:', error);
             }
-        } catch (error) {
-            console.error('Hálózati hiba:', error);
-        }
+        });
     });
-});
-</script>
 </script>
 
 </body>

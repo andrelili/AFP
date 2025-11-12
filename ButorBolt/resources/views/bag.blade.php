@@ -5,31 +5,102 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kosár – ButorBolt</title>
   <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+  <style>
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 50px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .profile-dropdown a,
+    .profile-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      color: black;
+    }
+
+    .profile-dropdown a:hover,
+    .profile-dropdown button:hover {
+      background-color: #f5f5f5;
+    }
+
+    .profile-menu {
+      position: relative;
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="left-group">
     <a href="{{ route('home') }}">
-        <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
+      <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
     </a>
-    <div class="menu-icon"><span></span><span></span><span></span></div>
+
+    <div class="menu-icon">
+      <span></span><span></span><span></span>
+    </div>
+
     <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
-            </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+           viewBox="0 0 24 24" fill="none" stroke="black"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+      </svg>
     </a>
+
     <div class="icon" title="Szűrés">
-            <svg xmlns="http://www.w3.org/2000/svg"
-            width="22" height="22"
-            viewBox="0 0 24 24"
-            fill="black">
-            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-            </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+           viewBox="0 0 24 24" fill="black">
+        <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+      </svg>
     </div>
   </div>
-  <div class="right-group">
+
+  <div class="right-group" style="display:flex;align-items:center;gap:12px;">
     <a href="{{ route('home') }}" class="btn-nav">Főoldal</a>
+
+    @auth
+      <div class="profile-menu">
+        <div class="profile-circle" id="profileToggle">
+          @if (Auth::user()->profile_picture)
+            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
+          @else
+            👤
+          @endif
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="{{ route('profile.show') }}">Profilom</a>
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit">Kijelentkezés</button>
+          </form>
+        </div>
+      </div>
+    @else
+      <div class="profile-circle" title="Profil">👤</div>
+    @endauth
   </div>
 </header>
 
@@ -66,15 +137,37 @@
           @csrf
           <button class="btn-nav">Kosár ürítése</button>
         </form>
-          <form method="GET" action="{{ route('checkout.show') }}">
-            @csrf
-            <button class="btn-nav" style="background:#28a745;color:white;">Tovább a rendeléshez</button>
-          </form>
-        <div style="font-weight:700;font-size:1.1rem;">Összesen: {{ number_format($total,0,'',' ') }} Ft</div>
+
+        <form method="GET" action="{{ route('checkout.show') }}">
+          @csrf
+          <button class="btn-nav" style="background:#28a745;color:white;">Tovább a rendeléshez</button>
+        </form>
+
+        <div style="font-weight:700;font-size:1.1rem;">
+          Összesen: {{ number_format($total,0,'',' ') }} Ft
+        </div>
       </div>
     @endif
   </section>
 </main>
+
+<script>
+  const profileToggle = document.getElementById('profileToggle');
+  const profileDropdown = document.getElementById('profileDropdown');
+
+  if (profileToggle) {
+    profileToggle.addEventListener('click', () => {
+      profileDropdown.style.display =
+        profileDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+        profileDropdown.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
