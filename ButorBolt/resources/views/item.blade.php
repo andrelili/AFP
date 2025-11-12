@@ -228,34 +228,33 @@
     {{-- === ÉRTÉKELÉSI SZEKCIÓ === --}}
     <div class="item-detail rating-section">
         <h2>Értékelések</h2>
-        <div class="review-list">
-            <h4>Korábbi értékelések (Példa)</h4>
+       <div class="review-list">
+        @php
+            $reviews = session()->get("reviews.{$item['id']}", []);
+        @endphp
+        @foreach($reviews as $rev)
             <div class="review-item">
-                <div class="stars">★★★★☆</div>
-                <small>Vásárló Neve - 2025-10-28</small>
-                <p>Nagyon kényelmes, bár a színe egy kicsit sötétebb, mint a képen.</p>
+                <div class="stars">{{ str_repeat('★', $rev['rating']) . str_repeat('☆', 5 - $rev['rating']) }}</div>
+                <small>{{ $rev['user'] }} - {{ $rev['date'] }}</small>
+                <p>{{ $rev['comment'] }}</p>
             </div>
-            <div class="review-item">
-                <div class="stars">★★★★★</div>
-                <small>Másik Vásárló - 2025-10-25</small>
-                <p>Tökéletes! Pont ilyet kerestem. Gyors szállítás.</p>
-            </div>
-        </div>
-
-        <div class="rating-form" style="margin-top: 30px;">
-            <h4>Értékelés írása</h4>
-            <input type="hidden" name="rating" id="ratingInput" value="0">
-            <div class="star-rating" id="starRating">
-                <span data-value="1">★</span>
-                <span data-value="2">★</span>
-                <span data-value="3">★</span>
-                <span data-value="4">★</span>
-                <span data-value="5">★</span>
-            </div>
-            <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
-            <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
-        </div>
+        @endforeach
     </div>
+
+        <form method="POST" action="{{ url('/items/'.$item['id'].'/review') }}" class="rating-form" style="margin-top: 30px;">
+        @csrf
+        <h4>Értékelés írása</h4>
+        <input type="hidden" name="rating" id="ratingInput" value="0">
+        <div class="star-rating" id="starRating">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+        </div>
+        <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
+        <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
+    </form>
 </main>
 
 {{-- === JAVASCRIPT === --}}

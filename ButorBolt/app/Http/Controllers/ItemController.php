@@ -98,4 +98,24 @@ class ItemController extends Controller
         }
         return 0;
     }
+
+    public function addReview(Request $request, $id)
+    {
+        $request->validate([
+        'rating' => 'required|integer|min:1|max:5',
+        'comment' => 'required|string|max:500',
+        ]);
+        $review = [
+            'user' => auth()->user()->name ?? 'Vendég',
+            'rating' => $request->input('rating'),
+            'comment' => $request->input('comment'),
+            'date' => now()->format('Y-m-d'),
+        ];
+
+        $reviews = session()->get("reviews.$id", []);
+        $reviews[] = $review;
+        session()->put("reviews.$id", $reviews);
+
+        return redirect()->back();
+    }
 }
