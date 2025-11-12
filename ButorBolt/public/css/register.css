@@ -120,6 +120,12 @@ body {
     justify-content: center;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
     flex-shrink: 0;
+    overflow: hidden;
+}
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .icon {
@@ -177,7 +183,18 @@ body {
     cursor: pointer;
     transition: 0.3s;
 }
-
+.btn-admin{
+    background-color: #A31621;
+    color: white;
+    width: 100%;
+    border: none;
+    font-size: 20px;
+    padding: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
 .btn-register:hover,
 .btn-login:hover {
     background-color: #343a40;

@@ -95,6 +95,57 @@
             cursor: pointer;
             font-weight: bold;
         }
+
+        .profile-menu {
+            position: relative;
+        }
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .profile-circle:hover {
+            background-color: #e0e0e0;
+        }
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            min-width: 150px;
+        }
+        .profile-dropdown a,
+        .profile-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -108,12 +159,6 @@
             <span></span>
             <span></span>
             <span></span>
-        </div>
-
-        <div class="icon" title="Kedvencek">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
-            </svg>
         </div>
 
         <div class="icon" title="Szűrés">
@@ -131,12 +176,23 @@
             <input type="text" placeholder="Keresés...">
         </div>
     </div>
+<div class="right-group">
+        <a href="{{ route('home') }}" class="btn-nav btn-preview" title="Előnézet">Előnézet</a>
 
-    <div class="right-group">
-        <div class="icon" title="Kosár">🛒</div>
-        <div class="profile-circle" title="Profil">👤</div>
-    </div>
+        <div class="profile-menu">
+            <div class="profile-circle" id="profileToggle" title="Profil">
+                <img src="{{ asset('/images/adminkep.jpg') }}" alt="Admin ikon" class="profile-img">
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Kijelentkezés</button>
+                </form>
+            </div>
+        </div>
 </header>
+
 
 <main class="form-container" style="margin-top:120px;">
     <h2>Admin kezelőfelület</h2>
@@ -230,6 +286,23 @@
             document.getElementById('productStock').value = btn.dataset.stock;
         });
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('profileToggle');
+    const dropdown = document.getElementById('profileDropdown');
+
+    if (toggle && dropdown) {
+        toggle.addEventListener('click', () => {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', e => {
+            if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+});
 </script>
 
 </body>

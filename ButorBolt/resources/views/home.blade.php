@@ -176,6 +176,9 @@
     </div>
 
     <div class="right-group">
+        @if(auth()->check() && session('admin_mode') && auth()->user()->is_admin)
+            <a href="{{route('admin.index')}}" class="btn-nav btn-edit" style="margin-left: 10px;">Szerkesztés</a>
+        @endif
         <div class="icon" title="Kosár">
             <a href="{{ Route::has('bag.index') ? route('bag.index') : url('/bag') }}" style="text-decoration:none; color:inherit;">
                 🛒
@@ -188,7 +191,6 @@
 
         @guest
             <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
-
             @if (Route::has('register'))
                 <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
             @else
@@ -196,21 +198,28 @@
             @endif
         @else
             <div class="profile-menu">
-                <div class="profile-circle" id="profileToggle">
-                    @if (Auth::user()->profile_picture)
+                <div class="profile-circle" id="profileToggle" title="Profil">
+                    @if (session('admin_mode') && Auth::user()->is_admin)
+                        <img src="{{ asset('images/adminkep.jpg') }}" alt="Admin" class="profile-img">
+                    @elseif (Auth::user()->profile_picture)
                         <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
                     @else
                         👤
                     @endif
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
-                    <a href="{{ route('profile.show') }}">Profilom</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit">Kijelentkezés</button>
-                    </form>
-                </div>
-            </div>
+                    @if (session('admin_mode') && Auth::user()->is_admin)
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Kijelentkezés</button>
+                        </form>
+                    @else
+                        <a href="{{ route('profile.show') }}">Profilom</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Kijelentkezés</button>
+                        </form>
+                    @endif
         @endguest
     </div>
 </header>
@@ -317,6 +326,7 @@
                 </div>
             @endif
             <button class="btn-login" type="submit">Bejelentkezés</button>
+            <button class="btn-admin" type="submit" value="1" name="admin_login">Admin</button>
         </form>
     </div>
 </div>
