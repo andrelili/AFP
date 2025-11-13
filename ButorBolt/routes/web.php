@@ -58,3 +58,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profil/kep', [ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
 });
+
+Route::post('/items/{id}/review', [ItemController::class, 'addReview'])
+    ->name('items.addReview');
