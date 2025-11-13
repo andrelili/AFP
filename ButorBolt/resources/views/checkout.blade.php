@@ -187,9 +187,21 @@
                         </select>
                     </div>
                 </div>
-
+                
                 <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
             </form>
+            <script>
+                
+            document.querySelector('form').addEventListener('submit', function (e) {
+            const payment = document.querySelector('select[name="payment_method"]').value;
+
+            if (payment === "card") {
+                e.preventDefault(); 
+                window.location.href = "{{ route('payment.form') }}";
+            }
+            });
+        </script>
+
         </div>
     </div>
 </main>

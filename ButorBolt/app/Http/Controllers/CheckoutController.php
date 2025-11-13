@@ -70,4 +70,14 @@ class CheckoutController extends Controller
 
         return redirect()->route('successful.order');
     }
+
+    public function showPaymentForm(Request $request)
+    {
+        if ($request->payment_method !== 'card') {
+        return redirect()->route('bag.checkout')->with('error', 'Kérlek válassz bankkártyás fizetést!');
+    }
+
+    return view('payment.payment_form');
+    }
+
 }
