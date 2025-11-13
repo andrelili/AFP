@@ -58,10 +58,6 @@
       <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
     </a>
 
-    <div class="menu-icon">
-      <span></span><span></span><span></span>
-    </div>
-
     <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
            viewBox="0 0 24 24" fill="none" stroke="black"
@@ -69,13 +65,6 @@
         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
       </svg>
     </a>
-
-    <div class="icon" title="Szűrés">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-           viewBox="0 0 24 24" fill="black">
-        <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-      </svg>
-    </div>
   </div>
 
   <div class="right-group" style="display:flex;align-items:center;gap:12px;">

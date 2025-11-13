@@ -13,11 +13,9 @@
             <a href="{{ route('home') }}">
                 <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
             </a>
-            <div class="menu-icon" title="Menü">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+        </div>
+        <div class="right-group">
+             <a href="{{ route('home') }}" class="btn-nav">← Vissza a főoldalra</a>
         </div>
     </header>
 
@@ -34,7 +32,8 @@
                     <input type="text" name="last_name" placeholder="Keresztnév">
                 </div>
                 <div class="form-field">
-                    <input type="email" name="email" placeholder="Email">
+                    <input type="email" name="email" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+           title="Érvényes email címet írjon: pl. valaki@pelda.com" required>
                 </div>
                 <div class="form-field">
                     <input type="text" name="username" placeholder="Felhasználónév">
@@ -46,7 +45,7 @@
                     <input type="password" name="password_confirmation" placeholder="Jelszó megerősítése">
                 </div>
                 <div class="form-field">
-                    <input type="text" name="phone" placeholder="Telefonszám">
+                    <input type="text" name="phone" placeholder="Telefonszám" pattern="[0-9]{6,15}" title="Csak számokat írjon, 6-15 számjegy">
                 </div>
                 <div class="form-field">
                     <input type="text" name="address" placeholder="Cím">

@@ -155,31 +155,28 @@
         <a href="{{ route('home') }}">
             <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="">
         </a>
-        <div class="menu-icon" title="Menü">
-            <span></span><span></span><span></span>
-        </div>
+    </div>
 
-        <!-- Szűrő gomb a dropdownnal -->
-        <div class="icon profile-menu" title="Szűrés" id="filterBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
-                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-            </svg>
-            <div class="filter-dropdown" id="filterDropdown">
+
+                <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
+    <div class="icon" title="Szűrés" id ="filterBtn" style="position: relative; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
+            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+        </svg>
+                    <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
                 <a data-sort="price-asc">Ár szerint növekvő</a>
                 <a data-sort="price-desc">Ár szerint csökkenő</a>
                 <a data-sort="name-asc">Név szerint (A–Z)</a>
                 <a data-sort="name-desc">Név szerint (Z–A)</a>
+                <a data-sort="favourite-desc">Legkedveltebb</a>
             </div>
-        </div>
     </div>
-
-    <div class="center-group">
-        <div class="search-box">
-            <input type="text" placeholder="Keresés...">
-        </div>
+    <div class="search-box">
+        <input type="text" placeholder="Keresés..." id="searchInput">
+        <div class="suggestions-box" id="suggestionsBox"></div>
     </div>
-
-    <div class="right-group">
+</div>
+<div class="right-group">
         <a href="{{ route('home') }}" class="btn-nav btn-preview" title="Előnézet">Előnézet</a>
 
         <div class="profile-menu">

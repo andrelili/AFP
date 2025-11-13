@@ -61,3 +61,6 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/card-payment', function () {
     return view('card');
 });
+
+Route::post('/items/{id}/review', [ItemController::class, 'addReview'])
+    ->name('items.addReview');
