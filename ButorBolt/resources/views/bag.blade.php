@@ -112,7 +112,9 @@
         @foreach($cart as $id => $row)
           @php $availableStock = $stockMap[$id] ?? 0; @endphp
           <div class="cart-row" style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 16px rgba(0,0,0,.06);">
-            <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;">
+            <a href="{{ route('items.show', ['id' => $row['id']]) }}">
+              <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;">
+            </a>
             <div style="flex:1;">
               <div style="font-weight:600;">{{ $row['name'] }}</div>
               <div>{{ number_format($row['price'],0,'',' ') }} Ft</div>
@@ -127,7 +129,7 @@
          min="1"
          max="{{ $availableStock }}"
          style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
-                <button type="submit" class="btn-nav">Frissít</button>
+                <button type="submit" class="btn-nav">Módosítás</button>
               @else
                 <input type="number" disabled value="0" style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
                 <button type="button" class="btn-nav" disabled style="opacity:.6;">Nincs készleten</button>
