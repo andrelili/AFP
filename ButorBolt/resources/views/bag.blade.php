@@ -108,20 +108,30 @@
         </section>
 @else
 
-
-
       <div class="cart-list" style="display:flex;flex-direction:column;gap:12px;">
-        @foreach($cart as $row)
+        @foreach($cart as $id => $row)
+          @php $availableStock = $stockMap[$id] ?? 0; @endphp
           <div class="cart-row" style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 16px rgba(0,0,0,.06);">
             <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;">
             <div style="flex:1;">
               <div style="font-weight:600;">{{ $row['name'] }}</div>
               <div>{{ number_format($row['price'],0,'',' ') }} Ft</div>
+              <div style="font-size:.85rem;color:#666;">Elérhető: {{ $availableStock }} db</div>
             </div>
             <form method="POST" action="{{ route('bag.update', ['id'=>$row['id']]) }}" style="display:flex;gap:6px;align-items:center;">
               @csrf
-              <input type="number" name="qty" value="{{ $row['qty'] }}" min="1" style="width:70px;padding:6px;border-radius:8px;border:1px solid #ddd;">
-              <button class="btn-nav">Módosít</button>
+              @if($availableStock > 0)
+                <input type="number"
+         name="qty"
+         value="{{ $row['qty'] }}"
+         min="1"
+         max="{{ $availableStock }}"
+         style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
+                <button type="submit" class="btn-nav">Frissít</button>
+              @else
+                <input type="number" disabled value="0" style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
+                <button type="button" class="btn-nav" disabled style="opacity:.6;">Nincs készleten</button>
+              @endif
             </form>
             <form method="POST" action="{{ route('bag.remove', ['id'=>$row['id']]) }}">
               @csrf

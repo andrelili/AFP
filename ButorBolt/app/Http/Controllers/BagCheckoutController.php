@@ -11,44 +11,52 @@ class BagCheckoutController extends Controller
     {
         $cart = $request->session()->get('cart', []);
         $total = collect($cart)->sum(fn($row) => $row['price'] * $row['qty']);
-        return view('bag', compact('cart', 'total'));
+        $stockMap = [];
+        foreach ($cart as $id => $row) {
+            $stockMap[$id] = $this->getStock((int)$id);
+        }
+
+        return view('bag', compact('cart', 'total', 'stockMap'));
     }
 
     public function add(Request $request, $id)
-    {
-        $product = $this->productById((int)$id);
-        if (!$product) {
-            return back()->with('error', 'A termék nem található.');
-        }
-
-        $qty = max(1, (int)$request->input('qty', 1));
-        if ($qty <= 0){
-            return back()->with('error', 'Érvénytelen mennyiség.');
-        }
-
-        $available = $this->getStock($id);
-        if($qty > $available){
-            return back()->with('error', 'Nincs ennyi raktáron. Elérhető: '. $available . 'db.');
-        }
-
-        $cart = $request->session()->get('cart', []);
-        if (isset($cart[$id])) {
-            $cart[$id]['qty'] += $qty;
-        } else {
-            $cart[$id] = [
-                'id'    => $product['id'],
-                'name'  => $product['name'],
-                'price' => $product['price'],
-                'img'   => $product['img'],
-                'qty'   => $qty,
-            ];
-        }
-
-        $request->session()->put('cart', $cart);
-        $request->session()->put('cart_count', collect($cart)->sum('qty'));
-
-        return back()->with('success', 'Hozzáadva a kosárhoz.');
+{
+    $product = $this->productById((int)$id);
+    if (!$product) {
+        return back()->with('error', 'A termék nem található.');
     }
+
+    $qty = max(1, (int)$request->input('qty', 1));
+    if ($qty <= 0){
+        return back()->with('error', 'Érvénytelen mennyiség.');
+    }
+
+    $cart = $request->session()->get('cart', []);
+    $currentQty = $cart[$id]['qty'] ?? 0;
+
+    $available = $this->getStock($id);
+
+    if($qty + $currentQty > $available){
+        return back()->with('error', 'Nincs ennyi raktáron. Elérhető: '. $available . ' db.');
+    }
+
+    if (isset($cart[$id])) {
+        $cart[$id]['qty'] += $qty;
+    } else {
+        $cart[$id] = [
+            'id'    => $product['id'],
+            'name'  => $product['name'],
+            'price' => $product['price'],
+            'img'   => $product['img'],
+            'qty'   => $qty,
+        ];
+    }
+
+    $request->session()->put('cart', $cart);
+    $request->session()->put('cart_count', collect($cart)->sum('qty'));
+
+    return back()->with('success', 'Hozzáadva a kosárhoz.');
+}
 
     public function update(Request $request, $id)
     {
@@ -56,6 +64,10 @@ class BagCheckoutController extends Controller
         if($qty <= 0){
             return back()->with('error', 'Érvénytelen mennyiség.');
         }
+            $available = $this->getStock((int)$id);
+    if ($qty > $available) {
+        return back()->with('error', 'Nincs ennyi raktáron. Elérhető: ' . $available . ' db.');
+    }
         $cart = $request->session()->get('cart', []);
 
         if (isset($cart[$id])) {
@@ -132,13 +144,14 @@ class BagCheckoutController extends Controller
         return redirect()->route('checkout')->with('checkout', 'Tovább a megrendeléshez!');
     }
 
-     private function readStock(): array
+     private function readStockFile(): array
     {
         $path = resource_path('data/stock.json');
         if (!file_exists($path)) {
             return [];
         }
-        return json_decode(file_get_contents($path), true) ?: [];
+            $json = file_get_contents($path);
+    return json_decode($json, true) ?? [];
     }
 
     private function writeStock(array $list): void
@@ -152,19 +165,17 @@ class BagCheckoutController extends Controller
 
     private function getStock(int $id): int
     {
-        $list = $this->readStock();
-        foreach ($list as $item) {
-            if (isset($item['id']) && $item['id'] === $id) {
-                return (int)($item['stock'] ?? 0);
-            }
-        }
-        return 0;
+    $list = $this->readStockFile();
+    foreach ($list as $r) {
+        if (isset($r['id']) && $r['id'] === $id) return (int)($r['stock'] ?? 0);
+    }
+    return 0;
     }
 
 
      public function adjustStock(int $id, int $delta): void
     {
-        $list = $this->readStock();
+        $list = $this->readStockFile();
         $found = false;
 
         foreach ($list as &$item) {
