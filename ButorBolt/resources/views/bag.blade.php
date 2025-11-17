@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kosár – ButorBolt</title>
   <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/home.css') }}">
   <style>
     .profile-img {
       width: 36px;
@@ -67,9 +68,6 @@
     </a>
   </div>
 
-  <div class="right-group" style="display:flex;align-items:center;gap:12px;">
-    <a href="{{ route('home') }}" class="btn-nav">Főoldal</a>
-
     @auth
       <div class="profile-menu">
         <div class="profile-circle" id="profileToggle">
@@ -93,13 +91,25 @@
   </div>
 </header>
 
-<main class="home-wrap" style="margin-top:120px;">
-  <section class="hero-card">
-    <h1>Kosár</h1>
-    @if(empty($cart))
-      <p>A kosarad üres.</p>
-      <a href="{{ route('home') }}" class="btn-nav primary">Vissza a vásárláshoz</a>
-    @else
+<main class="home-wrap">
+<section class="hero-card" style="margin-top:120px;">
+    <div class="hero-text">
+        <h1>Kosár</h1>
+        <p>Itt találod az összes kosárba helyezett termékedet.</p>
+    </div>
+</section>
+
+@if(empty($cart))
+        <section class="hero-card" style="margin-top:40px;">
+            <div class="hero-text" style="text-align:center;">
+                <p>A kosarad üres.</p>
+                <p>Böngéssz a <a href="{{ route('home') }}">főoldalon</a> és adj hozzá pár terméket!</p>
+            </div>
+        </section>
+@else
+
+
+
       <div class="cart-list" style="display:flex;flex-direction:column;gap:12px;">
         @foreach($cart as $row)
           <div class="cart-row" style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 16px rgba(0,0,0,.06);">
@@ -136,6 +146,7 @@
           Összesen: {{ number_format($total,0,'',' ') }} Ft
         </div>
       </div>
+
     @endif
   </section>
 </main>

@@ -130,13 +130,6 @@
         </a>
     </div>
 
-        <div class="menu-icon" title="Menü">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </div>
-
                 <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
     <div class="icon" title="Szűrés" id ="filterBtn" style="position: relative; cursor: pointer;">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
