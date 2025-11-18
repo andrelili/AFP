@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kosár – ButorBolt</title>
   <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/home.css') }}">
   <style>
     .profile-img {
       width: 36px;
@@ -67,9 +68,6 @@
     </a>
   </div>
 
-  <div class="right-group" style="display:flex;align-items:center;gap:12px;">
-    <a href="{{ route('home') }}" class="btn-nav">Főoldal</a>
-
     @auth
       <div class="profile-menu">
         <div class="profile-circle" id="profileToggle">
@@ -93,25 +91,49 @@
   </div>
 </header>
 
-<main class="home-wrap" style="margin-top:120px;">
-  <section class="hero-card">
-    <h1>Kosár</h1>
-    @if(empty($cart))
-      <p>A kosarad üres.</p>
-      <a href="{{ route('home') }}" class="btn-nav primary">Vissza a vásárláshoz</a>
-    @else
+<main class="home-wrap">
+<section class="hero-card" style="margin-top:120px;">
+    <div class="hero-text">
+        <h1>Kosár</h1>
+        <p>Itt találod az összes kosárba helyezett termékedet.</p>
+    </div>
+</section>
+
+@if(empty($cart))
+        <section class="hero-card" style="margin-top:40px;">
+            <div class="hero-text" style="text-align:center;">
+                <p>A kosarad üres.</p>
+                <p>Böngéssz a <a href="{{ route('home') }}">főoldalon</a> és adj hozzá pár terméket!</p>
+            </div>
+        </section>
+@else
+
       <div class="cart-list" style="display:flex;flex-direction:column;gap:12px;">
-        @foreach($cart as $row)
+        @foreach($cart as $id => $row)
+          @php $availableStock = $stockMap[$id] ?? 0; @endphp
           <div class="cart-row" style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 16px rgba(0,0,0,.06);">
-            <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;">
+            <a href="{{ route('items.show', ['id' => $row['id']]) }}">
+              <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}" style="width:100px;height:80px;object-fit:cover;border-radius:8px;">
+            </a>
             <div style="flex:1;">
               <div style="font-weight:600;">{{ $row['name'] }}</div>
               <div>{{ number_format($row['price'],0,'',' ') }} Ft</div>
+              <div style="font-size:.85rem;color:#666;">Elérhető: {{ $availableStock }} db</div>
             </div>
             <form method="POST" action="{{ route('bag.update', ['id'=>$row['id']]) }}" style="display:flex;gap:6px;align-items:center;">
               @csrf
-              <input type="number" name="qty" value="{{ $row['qty'] }}" min="1" style="width:70px;padding:6px;border-radius:8px;border:1px solid #ddd;">
-              <button class="btn-nav">Módosít</button>
+              @if($availableStock > 0)
+                <input type="number"
+         name="qty"
+         value="{{ $row['qty'] }}"
+         min="1"
+         max="{{ $availableStock }}"
+         style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
+                <button type="submit" class="btn-nav">Módosítás</button>
+              @else
+                <input type="number" disabled value="0" style="width:70px; padding:6px; border-radius:8px; border:1px solid #ddd;">
+                <button type="button" class="btn-nav" disabled style="opacity:.6;">Nincs készleten</button>
+              @endif
             </form>
             <form method="POST" action="{{ route('bag.remove', ['id'=>$row['id']]) }}">
               @csrf
@@ -136,6 +158,7 @@
           Összesen: {{ number_format($total,0,'',' ') }} Ft
         </div>
       </div>
+
     @endif
   </section>
 </main>
