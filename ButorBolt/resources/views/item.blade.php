@@ -155,6 +155,63 @@
     font-weight: bold;
 }
 
+.review-container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.review {
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.review strong {
+    font-size: 16px;
+}
+
+.review p {
+    margin: 8px 0;
+}
+
+.review small {
+    color: #777;
+    font-size: 13px;
+}
+
+.rating-form,
+.rating-guest {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.rating-form h4 {
+    margin-bottom: 10px;
+}
+
+.rating-form textarea {
+    width: 100%;
+    min-height: 100px;
+    border-radius: 6px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.star-rating span {
+    font-size: 26px;
+    cursor: pointer;
+    padding: 3px;
+}
+
 </style>
 </head>
 <body>
@@ -335,19 +392,33 @@
         </div>
     @endauth
 @php
-    $reviews = session()->get("reviews.$item[id]", []);
+     $reviews = session()->get("reviews.$item[id]", []);
+
+    $avgRating = count($reviews) > 0
+        ? round(array_sum(array_column($reviews, 'rating')) / count($reviews), 1)
+        : 0;
 @endphp
 
 @if(count($reviews) > 0)
-    <h4 style="margin-top:20px;">Felhasználói értékelések:</h4>
-    @foreach($reviews as $review)
-        <div class="review" style="border-top:1px solid #ccc; padding:10px 0;">
-            <strong>{{ $review['user'] }}</strong> - {{ $review['rating'] }}★
-            <p>{{ $review['comment'] }}</p>
-            <small>{{ $review['date'] }}</small>
-        </div>
-    @endforeach
+    <div class="review-container">
+       <h4>
+            Vásárlói értékelések
+            <br>
+            <strong style="font-size:20px;">
+                Átlag: {{ $avgRating }} ★
+            </strong>
+        </h4>
+
+        @foreach($reviews as $review)
+            <div class="review">
+                <strong>{{ $review['user'] }}</strong> – {{ $review['rating'] }}★
+                <p>{{ $review['comment'] }}</p>
+                <small>{{ $review['date'] }}</small>
+            </div>
+        @endforeach
+    </div>
 @endif
+
 
 {{-- === JAVASCRIPT === --}}
 <script>
