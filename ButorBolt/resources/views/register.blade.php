@@ -45,7 +45,7 @@
                     <input type="password" name="password_confirmation" placeholder="Jelszó megerősítése">
                 </div>
                 <div class="form-field">
-                    <input type="text" name="phone" placeholder="Telefonszám" pattern="[0-9]{6,15}" title="Csak számokat írjon, 6-15 számjegy">
+                        <input type="tel" name="phone" placeholder="Telefonszám" required pattern="[0-9]{9,15}" title="Csak számokat írj be, 9-15 számjegy között">
                 </div>
                 <div class="form-field">
                     <input type="text" name="address" placeholder="Cím">

@@ -7,9 +7,25 @@ use App\Models\Order;
 
 class CheckoutController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
-        return view('checkout');
+        // Kosár adatainak lekérése
+        $cart = $request->session()->get('cart', []);
+        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
+
+        // Raktárkészlet lekérése minden termékhez
+        $stockMap = [];
+        $stockFile = resource_path('data/stock.json');
+        $stockList = file_exists($stockFile) ? json_decode(file_get_contents($stockFile), true) : [];
+
+        foreach ($cart as $item) {
+            $id = (int)($item['id'] ?? 0);
+            $stockItem = collect($stockList)->firstWhere('id', $id);
+            $stockMap[$id] = $stockItem['stock'] ?? 0;
+        }
+
+        // Blade nézet meghívása a kosár adataival
+        return view('checkout', compact('cart', 'total', 'stockMap'));
     }
 
     public function process(Request $request)
@@ -29,6 +45,7 @@ class CheckoutController extends Controller
         $stockFile = resource_path('data/stock.json');
         $stockList = file_exists($stockFile) ? json_decode(file_get_contents($stockFile), true) : [];
 
+        // Ellenőrzés: van-e elegendő készlet
         foreach ($cart as $item) {
             $id = (int)($item['id'] ?? 0);
             $qty = (int)($item['qty'] ?? 0);
@@ -41,6 +58,7 @@ class CheckoutController extends Controller
             }
         }
 
+        // Megrendelés mentése adatbázisba
         Order::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -52,6 +70,7 @@ class CheckoutController extends Controller
             'total' => $total,
         ]);
 
+        // Készlet frissítése
         foreach ($cart as $item) {
             $id = (int)($item['id'] ?? 0);
             $qty = (int)($item['qty'] ?? 0);
@@ -65,7 +84,7 @@ class CheckoutController extends Controller
         }
         file_put_contents($stockFile, json_encode($stockList, JSON_PRETTY_PRINT));
 
-
+        // Kosár ürítése
         session()->forget(['cart', 'cart_count']);
 
         return redirect()->route('successful.order');
@@ -74,10 +93,9 @@ class CheckoutController extends Controller
     public function showPaymentForm(Request $request)
     {
         if ($request->payment_method !== 'card') {
-        return redirect()->route('bag.checkout')->with('error', 'Kérlek válassz bankkártyás fizetést!');
-    }
+            return redirect()->route('bag.checkout')->with('error', 'Kérlek válassz bankkártyás fizetést!');
+        }
 
-    return view('payment.payment_form');
+        return view('payment.payment_form');
     }
-
 }
