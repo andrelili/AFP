@@ -282,6 +282,7 @@
         <h3>Bejelentkezés</h3>
         <form method="POST" action="{{ Route::has('login') ? route('login') : url('/login') }}">
             @csrf
+            <input type="hidden" name="return_to" value="{{ url()->current() }}">
             <div class="form-field">
                 <input type="text" name="username" id="username" placeholder="Felhasználónév" required>
             </div>
