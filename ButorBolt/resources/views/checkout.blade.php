@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Rendelés leadása – ButorBolt</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -61,13 +62,15 @@
             background-color: #333;
         }
 
-        /* --- Profil dropdown --- */
+        /* Profil dropdown */
         .profile-menu {
             position: relative;
+            margin-left: 10px;
         }
+
         .profile-circle {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             overflow: hidden;
             display: flex;
@@ -76,6 +79,14 @@
             background-color: #f5f5f5;
             cursor: pointer;
         }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
         .profile-dropdown {
             display: none;
             position: absolute;
@@ -88,6 +99,7 @@
             z-index: 100;
             min-width: 150px;
         }
+
         .profile-dropdown a,
         .profile-dropdown button {
             display: block;
@@ -98,6 +110,104 @@
             border: none;
             cursor: pointer;
             color: #333;
+            text-decoration: none;
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Login modal */
+        .modal-bg {
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            max-width: 90%;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top:10px;
+            right:15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .modal-error {
+            color:#b00020;
+            margin-bottom:10px;
+        }
+
+        /* Guest figyelmeztetés */
+        .guest-alert {
+            border: 2px solid #f00;
+            padding: 15px;
+            text-align: center;
+            border-radius: 12px;
+            color: #b00020;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .guest-alert a {
+            color: #0000ff;
+            text-decoration: underline;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        /* Kosár listázás */
+        .cart-list {
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            margin-bottom: 40px;
+            width: 90%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cart-row {
+            display:flex;
+            gap:12px;
+            align-items:center;
+            background:#fff;
+            border-radius:12px;
+            padding:12px;
+            box-shadow:0 6px 16px rgba(0,0,0,.06);
+        }
+
+        .cart-row img {
+            width:100px;
+            height:80px;
+            object-fit:cover;
+            border-radius:8px;
+        }
+
+        .cart-row div {
+            flex:1;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -108,22 +218,27 @@
         <a href="{{ route('home') }}">
             <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="Logo">
         </a>
-        </a>
         <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
-        </div>
+        </a>
     </div>
 
     <div class="right-group">
         @guest
-            <a href="{{ route('login') }}" class="btn-nav">Bejelentkezés</a>
-            <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
+            <button class="btn-nav" id="btnOpenLogin" type="button">Bejelentkezés</button>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="btn-nav">Regisztráció</a>
+            @endif
         @else
             <div class="profile-menu">
                 <div class="profile-circle" id="profileToggle">
-                    👤
+                    @if (Auth::user()->profile_picture)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profilkép" class="profile-img">
+                    @else
+                        👤
+                    @endif
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
                     <a href="{{ route('profile.show') }}">Profilom</a>
@@ -138,10 +253,34 @@
 </header>
 
 <main class="home-wrap">
+
+    {{-- Kosár tartalom --}}
+    @if(!empty($cart))
+    <div class="cart-list">
+        @foreach($cart as $id => $row)
+        <div class="cart-row">
+            <a href="{{ route('items.show', ['id' => $row['id']]) }}">
+                <img src="{{ $row['img'] }}" alt="{{ $row['name'] }}">
+            </a>
+            <div>
+                <div style="font-weight:600;">{{ $row['name'] }}</div>
+                <div>{{ number_format($row['price'],0,'',' ') }} Ft</div>
+                <div style="font-size:.85rem;color:#666;">Mennyiség: {{ $row['qty'] }}</div>
+            </div>
+        </div>
+        @endforeach
+
+        {{-- Összesített ár --}}
+        <div class="cart-total">
+            Összesen: {{ number_format($total,0,'',' ') }} Ft
+        </div>
+    </div>
+    @endif
+
+    {{-- Rendelési űrlap --}}
     <div style="display: flex; flex-direction: column; align-items: center; gap: 40px;">
-        <div class="form-container">
+        <div class="form-container" id="checkoutFormContainer">
             <h2>Rendelés leadása</h2>
-            <p>Kérjük, add meg a rendeléshez szükséges adatokat:</p>
 
             <form method="POST" action="{{ route('checkout.process') }}">
                 @csrf
@@ -153,7 +292,7 @@
                         <input type="email" name="email" placeholder="Email cím" required>
                     </div>
                     <div class="form-field">
-                        <input type="text" name="phone" placeholder="Telefonszám" required>
+                        <input type="tel" name="phone" placeholder="Telefonszám" required pattern="[0-9]{9,15}" title="Csak számokat írj be, 9-15 számjegy között">
                     </div>
                     <div class="form-field">
                         <input type="text" name="address" placeholder="Szállítási cím" required>
@@ -161,8 +300,6 @@
                     <div class="form-field">
                         <input type="text" name="billing_address" placeholder="Számlázási cím" required>
                     </div>
-
-                    <!-- Fizetés mód kiválasztása -->
                     <div class="form-field">
                         <select name="payment_method" id="payment_method" required>
                             <option value="">Fizetési mód kiválasztása</option>
@@ -173,37 +310,34 @@
                     </div>
                 </div>
 
-                <!-- Bankkártyás mezők -->
                 <div id="card-fields" style="display:none; margin-top:20px;">
                     <div id="card-error" style="color:red; margin-bottom:10px; display:none;"></div>
-
                     <div class="form-field">
-                        <input type="text" id="card_number" name="card_number" maxlength="19"
-                               placeholder="Kártyaszám (xxxx xxxx xxxx xxxx)">
+                        <input type="text" id="card_number" name="card_number" maxlength="19" placeholder="Kártyaszám (xxxx xxxx xxxx xxxx)">
                     </div>
-
                     <div class="form-field">
-                        <input type="text" id="expiry" name="expiry" maxlength="5"
-                               placeholder="Lejárat (MM/YY)">
+                        <input type="text" id="expiry" name="expiry" maxlength="5" placeholder="Lejárat (MM/YY)">
                     </div>
-
                     <div class="form-field">
-                        <input type="text" id="cvv" name="cvv" maxlength="3"
-                               placeholder="CVV (3 számjegy)">
+                        <input type="text" id="cvv" name="cvv" maxlength="3" placeholder="CVV (3 számjegy)">
                     </div>
-
                     <div class="form-field">
-                        <input type="text" id="cardholder" name="cardholder"
-                               placeholder="Kártyatulajdonos neve">
+                        <input type="text" id="cardholder" name="cardholder" placeholder="Kártyatulajdonos neve">
                     </div>
                 </div>
 
                 <button type="submit" class="btn-register" style="width:100%;">Rendelés leadása</button>
             </form>
+
+            @guest
+            <div class="guest-alert">
+                A rendelés leadásához <a href="#" id="guestLoginLink">jelentkezz be</a> vagy <a href="{{ route('register') }}">regisztrálj</a>.
+            </div>
+            @endguest
+
         </div>
     </div>
 </main>
-
 
 <footer class="footer" style="margin-top:60px;">
     <div class="footer-inner">
@@ -211,13 +345,42 @@
     </div>
 </footer>
 
+<!-- Login modal -->
+<div class="modal-bg" id="loginModal">
+    <div class="modal">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <h3>Bejelentkezés</h3>
+        <form method="POST" action="{{ Route::has('login') ? route('login') : url('/login') }}">
+            @csrf
+            <div class="form-field">
+                <input type="text" name="username" id="username" placeholder="Felhasználónév" required>
+            </div>
+            <div class="form-field">
+                <input type="password" name="password" id="password" placeholder="Jelszó" required>
+            </div>
+            <button class="btn-login" type="submit">Bejelentkezés</button>
+            <button class="btn-admin" type="submit" value="1" name="admin_login">Admin</button>
+        </form>
+    </div>
+</div>
+
 <script>
 // Profil dropdown
-document.getElementById('profileToggle')?.addEventListener('click', () => {
-    const d = document.getElementById('profileDropdown');
-    d.style.display = d.style.display === 'block' ? 'none' : 'block';
-});
+const profileToggle = document.getElementById('profileToggle');
+const profileDropdown = document.getElementById('profileDropdown');
 
+if (profileToggle) {
+    profileToggle.addEventListener('click', () => {
+        profileDropdown.style.display =
+            profileDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.style.display = 'none';
+        }
+    });
+}
 
 // Bankkártya mezők megjelenítése
 document.getElementById('payment_method').addEventListener('change', function () {
@@ -225,13 +388,11 @@ document.getElementById('payment_method').addEventListener('change', function ()
         this.value === 'card' ? 'block' : 'none';
 });
 
-
 // Kártyaszám automatikus formázása
 document.getElementById('card_number').addEventListener('input', function () {
     let v = this.value.replace(/\D/g, '').substring(0, 16);
     this.value = v.replace(/(.{4})/g, '$1 ').trim();
 });
-
 
 // Lejárat automatikus MM/YY formázás
 document.getElementById('expiry').addEventListener('input', function () {
@@ -239,7 +400,6 @@ document.getElementById('expiry').addEventListener('input', function () {
     if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
     this.value = v;
 });
-
 
 // Hibaellenőrzés submit előtt
 document.querySelector('form').addEventListener('submit', function (e) {
@@ -267,6 +427,27 @@ document.querySelector('form').addEventListener('submit', function (e) {
         return false;
     }
 });
+
+// Login modal nyitása / zárása
+const modal = document.getElementById('loginModal');
+const btnOpen = document.getElementById('btnOpenLogin');
+const btnClose = document.getElementById('closeModal');
+
+if (btnOpen) btnOpen.addEventListener('click', () => modal.style.display = 'flex');
+if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
+window.addEventListener('click', e => { if (modal && e.target === modal) modal.style.display = 'none'; });
+
+// Guest: form tiltás és login link
+@guest
+const checkoutForm = document.getElementById('checkoutFormContainer');
+if (checkoutForm){
+    checkoutForm.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
+}
+document.getElementById('guestLoginLink').addEventListener('click', function(e){
+    e.preventDefault();
+    modal.style.display = 'flex';
+});
+@endguest
 </script>
 
 </body>
