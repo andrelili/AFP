@@ -372,20 +372,26 @@
 
     {{-- === ÉRTÉKELÉSI SZEKCIÓ === --}}
     @auth
-        <form method="POST" action="{{ url('/items/'.$item['id'].'/review') }}" class="rating-form" style="margin-top: 30px;">
-            @csrf
-            <h4>Értékelés írása</h4>
-            <input type="hidden" name="rating" id="ratingInput" value="0">
-            <div class="star-rating" id="starRating">
-                <span data-value="1">★</span>
-                <span data-value="2">★</span>
-                <span data-value="3">★</span>
-                <span data-value="4">★</span>
-                <span data-value="5">★</span>
+        @if(!empty($userHasReviewed))
+            <div class="rating-guest" style="margin-top:30px;">
+                <p>Már értékelted ezt a terméket. köszönjük visszajelzésed!</p>
             </div>
-            <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
-            <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
-        </form>
+        @else
+            <form method="POST" action="{{ url('/items/'.$item['id'].'/review') }}" class="rating-form" style="margin-top: 30px;">
+                @csrf
+                <h4>Értékelés írása</h4>
+                <input type="hidden" name="rating" id="ratingInput" value="0">
+                <div class="star-rating" id="starRating">
+                    <span data-value="1">★</span>
+                    <span data-value="2">★</span>
+                    <span data-value="3">★</span>
+                    <span data-value="4">★</span>
+                    <span data-value="5">★</span>
+                </div>
+                <textarea name="comment" placeholder="Írd le a véleményed... (pl. minőség, kényelem, stb.)"></textarea>
+                <button type="submit" class="btn-nav primary" style="margin-top: 10px;">Értékelés elküldése</button>
+            </form>
+        @endif
     @else
         <div class="rating-guest" style="margin-top:30px;">
             <p>Értékelés íráshoz jelentkezz be.</p>
@@ -393,7 +399,6 @@
         </div>
     @endauth
 @php
-    // Prefer reviews passed from the controller; fall back to an empty collection/array.
     $reviews = isset($reviews) ? $reviews : collect();
 
     $count = $reviews instanceof \Illuminate\Support\Collection
