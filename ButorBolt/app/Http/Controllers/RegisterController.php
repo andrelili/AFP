@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -21,7 +22,7 @@ class RegisterController extends Controller
                 'phone' => 'nullable|string|max:255',
                 'address' => 'nullable|string|max:255',
             ]);
-            User::create([
+            $user = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
@@ -31,7 +32,10 @@ class RegisterController extends Controller
                 'address' => $request->address,
             ]);
 
-            return redirect()->route('home')->with('success', 'Sikeres regisztráció!');
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return redirect()->route('home')->with('success', 'Sikeres regisztráció! Bejelentkezve.');
         }
 
         return view('register');
