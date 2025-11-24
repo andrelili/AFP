@@ -59,6 +59,7 @@ class CheckoutController extends Controller
         }
 
         // Megrendelés mentése adatbázisba
+        $cartNames = array_map(fn($i) => $i['name'] ?? null, $cart);
         Order::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -66,7 +67,7 @@ class CheckoutController extends Controller
             'address' => $data['address'],
             'billing_address' => $data['billing_address'],
             'payment_method' => $data['payment_method'],
-            'cart_items' => json_encode($cart),
+            'cart_items' => json_encode($cartNames, JSON_UNESCAPED_UNICODE),
             'total' => $total,
         ]);
 

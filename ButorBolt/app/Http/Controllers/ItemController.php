@@ -8,7 +8,7 @@ use App\Models\Review;
 
 class ItemController extends Controller
 {
-     public function show($id)
+    public function show($id)
     {
         $products = [
             [
@@ -81,7 +81,13 @@ class ItemController extends Controller
         if (!$item) abort(404);
     // call correct method name (case-sensitive)
     $stock = $this->getStock((int)$id);
-        return view('item', compact('item','stock'));
+
+    // fetch persisted reviews from database
+    $reviews = Review::where('item_id', (int)$id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return view('item', compact('item','stock','reviews'));
 
     }
     private function readStockFile(): array{
@@ -111,17 +117,28 @@ class ItemController extends Controller
             'comment' => 'required|string|max:500',
         ]);
 
-        $review = [
-            'user' => $request->user()->name ?? 'Vendég',
-            'rating' => $request->input('rating'),
-            'comment' => $request->input('comment'),
-            'date' => now()->format('Y-m-d'),
-        ];
+        $user = $request->user();
+        $userName = null;
+        if ($user) {
+            if (!empty($user->username)) {
+                $userName = $user->username;
+            } elseif (!empty($user->name)) {
+                $userName = $user->name;
+            } else {
+                $first = $user->first_name ?? '';
+                $last = $user->last_name ?? '';
+                $userName = trim($first . ' ' . $last);
+                if ($userName === '') $userName = null;
+            }
+        }
 
-        // session-be mentés
-        $reviews = session()->get("reviews.$id", []);
-        $reviews[] = $review;
-        session()->put("reviews.$id", $reviews);
+        Review::create([
+            'item_id' => (int)$id,
+            'user_id' => $user->id,
+            'user_name' => $userName,
+            'rating' => (int)$request->input('rating'),
+            'comment' => $request->input('comment'),
+        ]);
 
         return redirect()->back()->with('success', 'Köszönjük az értékelést!');
     }

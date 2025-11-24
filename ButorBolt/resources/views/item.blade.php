@@ -393,14 +393,23 @@
         </div>
     @endauth
 @php
-     $reviews = session()->get("reviews.$item[id]", []);
+    // Prefer reviews passed from the controller; fall back to an empty collection/array.
+    $reviews = isset($reviews) ? $reviews : collect();
 
-    $avgRating = count($reviews) > 0
-        ? round(array_sum(array_column($reviews, 'rating')) / count($reviews), 1)
-        : 0;
+    $count = $reviews instanceof \Illuminate\Support\Collection
+        ? $reviews->count()
+        : count($reviews);
+
+    $avgRating = 0;
+    if ($count > 0) {
+        $sum = $reviews instanceof \Illuminate\Support\Collection
+            ? $reviews->sum('rating')
+            : array_sum(array_column($reviews, 'rating'));
+        $avgRating = round($sum / $count, 1);
+    }
 @endphp
 
-@if(count($reviews) > 0)
+@if($count > 0)
     <div class="review-container">
        <h4>
             Vásárlói értékelések
@@ -411,10 +420,33 @@
         </h4>
 
         @foreach($reviews as $review)
+            @php
+                if (is_object($review)) {
+                    if (!empty($review->user_name)) {
+                        $rUser = $review->user_name;
+                    } elseif (isset($review->user) && is_object($review->user) && !empty($review->user->username)) {
+                        $rUser = $review->user->username;
+                    } elseif (isset($review->user) && is_object($review->user) && !empty($review->user->name)) {
+                        $rUser = $review->user->name;
+                    } else {
+                        $rUser = $review['user'] ?? 'Vendég';
+                    }
+                } else {
+                    $rUser = $review['user'] ?? ($review['user_name'] ?? 'Vendég');
+                }
+
+                $rRating = $review->rating ?? ($review['rating'] ?? 0);
+                $rComment = $review->comment ?? ($review['comment'] ?? '');
+                if (isset($review->created_at) && method_exists($review->created_at, 'format')) {
+                    $rDate = $review->created_at->format('Y-m-d H:i');
+                } else {
+                    $rDate = $review['date'] ?? ($review['created_at'] ?? '');
+                }
+            @endphp
             <div class="review">
-                <strong>{{ $review['user'] }}</strong> – {{ $review['rating'] }}★
-                <p>{{ $review['comment'] }}</p>
-                <small>{{ $review['date'] }}</small>
+                <strong>{{ $rUser }}</strong> – {{ $rRating }}★
+                <p>{{ $rComment }}</p>
+                <small>{{ $rDate }}</small>
             </div>
         @endforeach
     </div>
