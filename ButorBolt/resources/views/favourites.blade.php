@@ -95,7 +95,7 @@
 .filter-dropdown {
     display: none;
     position: absolute;
-    top: 100%; /* közvetlenül a gomb alatt */
+    top: 100%;
     left: 0;
     background: #fff;
     border: 1px solid #ddd;
@@ -123,31 +123,33 @@
         <a href="{{ route('home') }}">
             <img class="logo" src="{{ asset('images/butorlogo.png') }}" alt="Logo">
         </a>
-                <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
+        <a href="{{ route('favourites.index') }}" class="icon" title="Kedvencek">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
             </svg>
         </a>
     </div>
 
-                <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
-    <div class="icon" title="Szűrés" id ="filterBtn" style="position: relative; cursor: pointer;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
-            <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
-        </svg>
-                    <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
+    <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
+        <div class="icon" title="Szűrés" id="filterBtn" style="position: relative; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="black">
+                <path d="M3 4h18l-7 8v7l-4 2v-9L3 4z"/>
+            </svg>
+
+            <div class="dropdown-content" id="filterDropdown" style="position:absolute; top:30px; right:0; display:none; background:white; border:1px solid #ccc; border-radius:6px; min-width:180px; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100;">
                 <a data-sort="price-asc">Ár szerint növekvő</a>
                 <a data-sort="price-desc">Ár szerint csökkenő</a>
                 <a data-sort="name-asc">Név szerint (A–Z)</a>
                 <a data-sort="name-desc">Név szerint (Z–A)</a>
                 <a data-sort="favourite-desc">Legkedveltebb</a>
             </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" placeholder="Keresés..." id="searchInput">
+            <div class="suggestions-box" id="suggestionsBox"></div>
+        </div>
     </div>
-    <div class="search-box">
-        <input type="text" placeholder="Keresés..." id="searchInput">
-        <div class="suggestions-box" id="suggestionsBox"></div>
-    </div>
-</div>
 
     <div class="right-group">
         <div class="icon" title="Kosár">
@@ -178,7 +180,7 @@
             </div>
         </div>
         @else
-        <div class="profile-circle" title="Profil">👤</div>
+            <div class="profile-circle" title="Profil">👤</div>
         @endauth
     </div>
 </header>
@@ -201,7 +203,11 @@
 <section class="section">
     <div class="product-grid" id="productGrid">
         @forelse ($favourites as $p)
-            <div class="product-card" data-category="{{ $p['category'] }}" data-name="{{ $p['name'] }}" data-price="{{ $p['price'] }}">
+            <div class="product-card"
+                data-category="{{ $p['category'] }}"
+                data-name="{{ $p['name'] }}"
+                data-price="{{ $p['price'] }}"
+                data-rating="{{ $p['rating'] ?? 0 }}">
                 <a href="{{ route('items.show', ['id' => $p['id']]) }}" style="text-decoration: none; color: inherit;">
                     <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
                     <div class="product-info">
@@ -233,8 +239,8 @@
 
 <script>
 // Profil dropdown
-const profileToggle = document.getElementById('profileToggle');
-const profileDropdown = document.getElementById('profileDropdown');
+const profileToggle=document.getElementById('profileToggle');
+const profileDropdown=document.getElementById('profileDropdown');
 if(profileToggle){
     profileToggle.addEventListener('click',()=>{profileDropdown.style.display=(profileDropdown.style.display==='block')?'none':'block';});
     document.addEventListener('click',e=>{
@@ -245,10 +251,10 @@ if(profileToggle){
 }
 
 // Keresés
-const searchInput = document.getElementById('searchInput');
-const suggestionsBox = document.getElementById('suggestionsBox');
-const products = @json($favourites);
-searchInput.addEventListener('input', function(){
+const searchInput=document.getElementById('searchInput');
+const suggestionsBox=document.getElementById('suggestionsBox');
+const products=@json($favourites);
+searchInput.addEventListener('input',function(){
     const query=this.value.toLowerCase().trim();
     suggestionsBox.innerHTML='';
     if(query===''){suggestionsBox.style.display='none';return;}
@@ -291,13 +297,14 @@ document.addEventListener('click',e=>{
     }
 });
 
-// Szűrő funkció
+// Szűrő funkció + Legkedveltebb
 filterDropdown.querySelectorAll('a').forEach(link=>{
     link.addEventListener('click',()=>{
         const sort=link.getAttribute('data-sort');
         const grid=document.getElementById('productGrid');
         const cards=Array.from(grid.querySelectorAll('.product-card'));
         let sortedCards=[];
+
         if(sort==='price-asc'){
             sortedCards=cards.sort((a,b)=>parseFloat(a.dataset.price)-parseFloat(b.dataset.price));
         }else if(sort==='price-desc'){
@@ -306,7 +313,10 @@ filterDropdown.querySelectorAll('a').forEach(link=>{
             sortedCards=cards.sort((a,b)=>a.dataset.name.localeCompare(b.dataset.name));
         }else if(sort==='name-desc'){
             sortedCards=cards.sort((a,b)=>b.dataset.name.localeCompare(a.dataset.name));
+        }else if(sort==='favourite-desc'){
+            sortedCards=cards.sort((a,b)=>parseFloat(b.dataset.rating)-parseFloat(a.dataset.rating));
         }
+
         sortedCards.forEach(card=>grid.appendChild(card));
         filterDropdown.style.display='none';
     });
@@ -314,7 +324,7 @@ filterDropdown.querySelectorAll('a').forEach(link=>{
 
 // Kedvencek eltávolítása
 document.querySelectorAll('.remove-favourite').forEach(btn=>{
-    btn.addEventListener('click', async function(){
+    btn.addEventListener('click',async function(){
         const id=this.dataset.id;
         const card=this.closest('.product-card');
         try{
@@ -340,5 +350,6 @@ document.querySelectorAll('.remove-favourite').forEach(btn=>{
     });
 });
 </script>
+
 </body>
 </html>

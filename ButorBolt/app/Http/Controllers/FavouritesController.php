@@ -10,7 +10,14 @@ class FavouritesController extends Controller
     public function index(Request $request)
     {
         $favourites = $request->session()->get('favourites', []);
+
+        // 🔥 Itt számoljuk bele az átlag ratinget
+        foreach ($favourites as &$p) {
+            $p['rating'] = \App\Models\Review::where('item_id', $p['id'])->avg('rating') ?? 0;
+        }
+
         $categories = collect($favourites)->pluck('category')->unique()->values()->all();
+
         return view('favourites', [
             'favourites' => array_values($favourites),
             'categories' => $categories
@@ -41,19 +48,19 @@ class FavouritesController extends Controller
     }
 
     public function remove(Request $request, $id)
-{
-    $id = (int) $id;
-    $favourites = $request->session()->get('favourites', []);
+    {
+        $id = (int) $id;
+        $favourites = $request->session()->get('favourites', []);
 
-    if (isset($favourites[$id])) {
-        unset($favourites[$id]);
-        $request->session()->put('favourites', $favourites);
+        if (isset($favourites[$id])) {
+            unset($favourites[$id]);
+            $request->session()->put('favourites', $favourites);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return back()->with('success', 'Eltávolítva a kedvencek közül.');
     }
-
-    if ($request->expectsJson()) {
-        return response()->json(['success' => true]);
-    }
-
-    return back()->with('success', 'Eltávolítva a kedvencek közül.');
-}
 }

@@ -23,7 +23,7 @@ class ItemController extends Controller
                     'id'=>2,
                     'name'=>'Tölgyfa étkezőasztal',
                     'price'=>149990,
-                    'img'=>'https://www.butormirek.hu/13159/tomor-tolgyfa-etkezogarnitura-6-szemely-reszere.jpg',
+                    'img'=>asset('images/tolgyfa_asztal.jpg.webp'),
                     'desc'=>'Masszív tömör tölgyfa étkezőasztal, akár 6 személy részére. Természetes fa erezet, elegáns kidolgozás.',
                     'category'=>'Asztalok',
                 ],
