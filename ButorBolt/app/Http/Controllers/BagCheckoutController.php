@@ -111,7 +111,7 @@ class BagCheckoutController extends Controller
     {
         return [
             ['id'=>1,'name'=>'Skandináv kanapé','price'=>199990,'img'=>'https://images.pexels.com/photos/20390760/pexels-photo-20390760.jpeg'],
-            ['id'=>2,'name'=>'Tölgyfa étkezőasztal','price'=>149990,'img'=>'https://www.butormirek.hu/13159/tomor-tolgyfa-etkezogarnitura-6-szemely-reszere.jpg'],
+            ['id'=>2,'name'=>'Tölgyfa étkezőasztal','price'=>149990,'img'=>'https://foresta.hu/wp-content/uploads/2024/02/kerek_tolgyfa_bovitheto_etkezoasztal-Orbetello-2-768x624.jpg'],
             ['id'=>3,'name'=>'Fa ágykeret','price'=>179990,'img'=>'https://img.butor1.hu/detailed/3581/agy-avicavu-118_3581621.jpg?w=900&h=675&func=fit&org_if_sml=1'],
             ['id'=>4,'name'=>'Irodaszék','price'=>59990,'img'=>'https://images.pexels.com/photos/1957477/pexels-photo-1957477.jpeg'],
             ['id'=>5,'name'=>'Komód 4 fiók, fehér','price'=>49990,'img'=>'https://www.vidaxl.hu/dw/image/v2/BFNS_PRD/on/demandware.static/-/Sites-vidaxl-catalog-master-sku/default/dwd711a3e2/hi-res/436/6356/447/242545/image_1_242545.jpg?sw=600'],
