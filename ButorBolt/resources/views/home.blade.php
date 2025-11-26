@@ -240,7 +240,7 @@
     <section class="section">
         <div class="product-grid">
             @foreach ($products as $p)
-            <div class="product-card" data-category="{{ $p['category'] }}" data-price="{{ $p['price'] }}" data-name="{{ $p['name'] }}">
+            <div class="product-card" data-category="{{ $p['category'] }}" data-price="{{ $p['price'] }}" data-name="{{ $p['name'] }}" data-rating="{{ $p['rating'] }}">
                 <a href="{{ Route::has('items.show') ? route('items.show', ['id' => $p['id']]) : url('/items/'.$p['id']) }}"
                    style="text-decoration: none; color: inherit;">
                     <div class="product-img" style="background-image:url('{{ $p['img'] }}')"></div>
@@ -436,6 +436,9 @@ if (filterBtn && filterDropdown) {
                     break;
                 case 'name-desc':
                     cards.sort((a,b) => b.dataset.name.localeCompare(a.dataset.name));
+                    break;
+                case 'favourite-desc':
+                    cards.sort((a, b) => parseFloat(b.dataset.rating || 0) - parseFloat(a.dataset.rating || 0));
                     break;
                 case 'favourite-desc':
                     cards.sort((a,b) => {
