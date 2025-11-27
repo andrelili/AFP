@@ -213,9 +213,10 @@
                     <button class="btn-nav btn-edit"
                             data-id="{{ $p['id'] }}"
                             data-name="{{ $p['name'] }}"
-                            data-stock="{{ $p['stock'] }}"
                             data-price="{{ $p['price'] }}"
-                            data-category="{{ $p['category'] }}">
+                            data-stock="{{ $p['stock'] }}"
+                            data-category="{{ $p['category'] }}"
+                            data-description="{{ $p['description'] }}">
                         ✏️
                     </button>
                 </div>
@@ -248,6 +249,10 @@
 
             <div class="form-field">
                 <input type="number" name="stock" id="productStock" placeholder="Elérhető mennyiség" min="0" step="1" required>
+            </div>
+            
+            <div class="form-field">
+                <textarea name="description" id="productDescription" placeholder="Termék leírása" rows="4">{{ old('description') }}</textarea>
             </div>
 
             <div class="form-field">
@@ -297,6 +302,7 @@
         document.getElementById('productPrice').value = btn.dataset.price;
         document.getElementById('productStock').value = btn.dataset.stock;
         document.getElementById('productCategory').value = btn.dataset.category || '';
+        document.getElementById('productDescription').value = btn.dataset.description || '';
     });
 });
 

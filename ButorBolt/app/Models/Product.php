@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = ['name', 'price','stock','img', 'category', 'description'];
-     public function reviews()
+    public function reviews()
     {
         return $this->hasMany(\App\Models\Review::class, 'item_id');
     }
+    public function getDescAttribute()
+    {
+        return $this->description;
+    }
+
 }

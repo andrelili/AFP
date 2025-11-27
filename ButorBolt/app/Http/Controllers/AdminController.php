@@ -21,6 +21,7 @@ class AdminController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer|min:0',
             'category' => 'nullable|string|max:255',
+             'description' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
@@ -43,6 +44,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'stock' => 'required|integer|min:0',
         ]);

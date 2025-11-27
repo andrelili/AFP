@@ -261,7 +261,20 @@ body {
     margin: 0 auto 15px auto;
     box-sizing: border-box;
 }
-
+.modal .form-field textarea {
+    display: block;
+    width: 85%;
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff;
+    margin: 0 auto 15px auto;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 80px;
+}
 .modal .form-field select {
     color: #555;
 }
