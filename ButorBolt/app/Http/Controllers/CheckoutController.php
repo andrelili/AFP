@@ -3,28 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\Order;
 
 class CheckoutController extends Controller
 {
     public function show(Request $request)
     {
-        // Kosár adatainak lekérése
         $cart = $request->session()->get('cart', []);
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
 
-        // Raktárkészlet lekérése minden termékhez
+        // DB-ből lekérjük a készletet minden termékhez
         $stockMap = [];
-        $stockFile = resource_path('data/stock.json');
-        $stockList = file_exists($stockFile) ? json_decode(file_get_contents($stockFile), true) : [];
-
         foreach ($cart as $item) {
-            $id = (int)($item['id'] ?? 0);
-            $stockItem = collect($stockList)->firstWhere('id', $id);
-            $stockMap[$id] = $stockItem['stock'] ?? 0;
+            $product = Product::find($item['id']);
+            $stockMap[$item['id']] = $product->stock ?? 0;
         }
 
-        // Blade nézet meghívása a kosár adataival
         return view('checkout', compact('cart', 'total', 'stockMap'));
     }
 
@@ -39,27 +34,31 @@ class CheckoutController extends Controller
             'payment_method' => 'required|string|in:card,cod,paypal',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cart = $request->session()->get('cart', []);
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
-
-        $stockFile = resource_path('data/stock.json');
-        $stockList = file_exists($stockFile) ? json_decode(file_get_contents($stockFile), true) : [];
 
         // Ellenőrzés: van-e elegendő készlet
         foreach ($cart as $item) {
-            $id = (int)($item['id'] ?? 0);
-            $qty = (int)($item['qty'] ?? 0);
-            $stockItem = collect($stockList)->firstWhere('id', $id);
-            $available = $stockItem['stock'] ?? 0;
-            if ($qty > $available) {
+            $product = Product::find($item['id']);
+            if (!$product) {
+                return back()->withErrors(['cart' => 'Egy termék nem található.'])->withInput();
+            }
+
+            if ($item['qty'] > $product->stock) {
                 return back()->withErrors([
-                    'stock' => "A(z) {$item['name']} termékből csak {$available} van raktáron."
+                    'stock' => "A(z) {$product->name} termékből csak {$product->stock} van raktáron."
                 ])->withInput();
             }
         }
 
         // Megrendelés mentése adatbázisba
-        $cartNames = array_map(fn($i) => $i['name'] ?? null, $cart);
+        $cartItems = array_map(fn($i) => [
+            'id' => $i['id'],
+            'name' => $i['name'],
+            'price' => $i['price'],
+            'qty' => $i['qty']
+        ], $cart);
+
         Order::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -67,28 +66,20 @@ class CheckoutController extends Controller
             'address' => $data['address'],
             'billing_address' => $data['billing_address'],
             'payment_method' => $data['payment_method'],
-            'cart_items' => json_encode($cartNames, JSON_UNESCAPED_UNICODE),
+            'cart_items' => json_encode($cartItems, JSON_UNESCAPED_UNICODE),
             'total' => $total,
         ]);
 
         // Készlet frissítése
         foreach ($cart as $item) {
-            $id = (int)($item['id'] ?? 0);
-            $qty = (int)($item['qty'] ?? 0);
-            foreach ($stockList as &$s) {
-                if (($s['id'] ?? null) === $id) {
-                    $s['stock'] = max(0, (int)($s['stock'] ?? 0) - $qty);
-                    break;
-                }
-            }
-            unset($s);
+            $product = Product::find($item['id']);
+            $product->decrement('stock', $item['qty']);
         }
-        file_put_contents($stockFile, json_encode($stockList, JSON_PRETTY_PRINT));
 
         // Kosár ürítése
-        session()->forget(['cart', 'cart_count']);
+        $request->session()->forget(['cart', 'cart_count']);
 
-        return redirect()->route('successful.order');
+        return redirect()->route('successful.order')->with('success', 'Rendelés sikeresen leadva!');
     }
 
     public function showPaymentForm(Request $request)

@@ -211,7 +211,13 @@
     cursor: pointer;
     padding: 3px;
 }
-
+.item-info .desc {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 15px 0;
+    color: #333;
+    white-space: pre-wrap;
+}
 </style>
 </head>
 <body>
@@ -314,7 +320,7 @@
         <div class="item-info">
             <h1>{{ $item['name'] }}</h1>
             <div class="price">{{ number_format($item['price'], 0, '', ' ') }} Ft</div>
-            <p class="desc">{{ $item['desc'] ?? 'Ez a termék jelenleg nem rendelkezik leírással.' }}</p>
+            <p class="desc">{{ $item->desc ?: 'Ez a termék jelenleg nem rendelkezik leírással.' }}</p>
 
             <div style="font-weight: 600">Raktáron: {{$stock}} db</div>
 

@@ -41,7 +41,7 @@ Route::get('/order/successful', function () {
 Route::middleware(['web', 'auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
-    Route::post('/admin/update', [AdminController::class, 'update'])->name('admin.update');
+    Route::post('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');
     Route::delete('/admin/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
 });
 

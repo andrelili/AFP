@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 
 class FavouritesController extends Controller
 {
@@ -30,18 +31,21 @@ class FavouritesController extends Controller
             return response()->json(['error' => 'Bejelentkezés szükséges.'], 401);
         }
 
-        $id = (int) $id;
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['error' => 'Termék nem található.'], 404);
+        }
+
         $favourites = $request->session()->get('favourites', []);
 
-        $product = [
-            'id'       => $id,
-            'name'     => $request->input('name', ''),
-            'price'    => (float) $request->input('price', 0),
-            'img'      => $request->input('img', ''),
-            'category' => $request->input('category', ''),
+        $favourites[$product->id] = [
+            'id'       => $product->id,
+            'name'     => $product->name,
+            'price'    => (float) $product->price,
+            'img'      => $product->img,
+            'category' => $product->category,
         ];
 
-        $favourites[$id] = $product;
         $request->session()->put('favourites', $favourites);
 
         return response()->json(['success' => true]);
