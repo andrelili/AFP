@@ -214,7 +214,8 @@
                             data-id="{{ $p['id'] }}"
                             data-name="{{ $p['name'] }}"
                             data-stock="{{ $p['stock'] }}"
-                            data-price="{{ $p['price'] }}">
+                            data-price="{{ $p['price'] }}"
+                            data-category="{{ $p['category'] }}">
                         ✏️
                     </button>
                 </div>
@@ -240,12 +241,24 @@
             <div class="form-field">
                 <input type="text" name="name" id="productName" placeholder="Termék neve" required>
             </div>
+
             <div class="form-field">
                 <input type="number" name="price" id="productPrice" placeholder="Ár (Ft)" required>
             </div>
+
             <div class="form-field">
                 <input type="number" name="stock" id="productStock" placeholder="Elérhető mennyiség" min="0" step="1" required>
             </div>
+
+            <div class="form-field">
+                <select name="category" id="productCategory">
+                    <option value="">-- Válassz kategóriát --</option>
+                    @foreach($products->pluck('category')->unique()->sort() as $cat)
+                        <option value="{{ $cat }}">{{ $cat }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="form-field">
                 <input type="file" name="img" id="productImg">
             </div>
@@ -273,18 +286,20 @@
     closeModal.addEventListener('click', () => modal.style.display = 'none');
     window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', () => {
-            title.textContent = "Termék szerkesztése";
-            form.action = "{{ route('admin.update') }}";
-            modal.style.display = 'flex';
+   document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+        title.textContent = "Termék szerkesztése";
+        form.action = "/admin/update/" + btn.dataset.id; 
+        modal.style.display = 'flex';
 
-            document.getElementById('productId').value = btn.dataset.id;
-            document.getElementById('productName').value = btn.dataset.name;
-            document.getElementById('productPrice').value = btn.dataset.price;
-            document.getElementById('productStock').value = btn.dataset.stock;
-        });
+        document.getElementById('productId').value = btn.dataset.id;
+        document.getElementById('productName').value = btn.dataset.name;
+        document.getElementById('productPrice').value = btn.dataset.price;
+        document.getElementById('productStock').value = btn.dataset.stock;
+        document.getElementById('productCategory').value = btn.dataset.category || '';
     });
+});
+
 
     // Profil dropdown
     document.addEventListener('DOMContentLoaded', () => {

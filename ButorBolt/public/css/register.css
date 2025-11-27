@@ -247,7 +247,9 @@ body {
     margin-bottom: 20px;
 }
 
-.modal .form-field input {
+.modal .form-field input,
+.modal .form-field select {
+    display: block;
     width: 85%;
     height: 45px;
     border: 2px solid #000;
@@ -256,10 +258,16 @@ body {
     font-size: 16px;
     outline: none;
     background-color: #fff;
-    margin-bottom: 15px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 15px auto;
+    box-sizing: border-box;
+}
+
+.modal .form-field select {
+    color: #555;
+}
+
+.modal .form-field select option:first-child {
+    color: #999;
 }
 
 .modal-close {
@@ -408,7 +416,7 @@ body {
 }
 .product-card .actions form {
     flex-grow: 1;
-    display: flex; /* Hogy a benne lévő button is ki tudja tölteni a formot */
+    display: flex;
 }
 .product-card .actions form .btn-nav {
     width: 100%;
