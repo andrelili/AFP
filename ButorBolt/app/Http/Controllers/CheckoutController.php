@@ -11,14 +11,13 @@ class CheckoutController extends Controller
     public function show(Request $request)
     {
         $cart = $request->session()->get('cart', []);
-        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
-
-        // DB-ből lekérjük a készletet minden termékhez
         $stockMap = [];
-        foreach ($cart as $item) {
-            $product = Product::find($item['id']);
-            $stockMap[$item['id']] = $product->stock ?? 0;
+        foreach ($cart as $id => $item) {
+            $product = Product::find($id);
+            $stockMap[$id] = $product->stock ?? 0;
         }
+
+        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
 
         return view('checkout', compact('cart', 'total', 'stockMap'));
     }
@@ -38,16 +37,16 @@ class CheckoutController extends Controller
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
 
         // Ellenőrzés: van-e elegendő készlet
-        foreach ($cart as $item) {
-            $product = Product::find($item['id']);
+        foreach ($cart as $id => $item) {
+            $product = Product::find($id);
             if (!$product) {
-                return back()->withErrors(['cart' => 'Egy termék nem található.'])->withInput();
+                return back()->withErrors(['cart' => 'Egy termék nem található.']);
             }
 
             if ($item['qty'] > $product->stock) {
                 return back()->withErrors([
                     'stock' => "A(z) {$product->name} termékből csak {$product->stock} van raktáron."
-                ])->withInput();
+                ]);
             }
         }
 
@@ -70,10 +69,12 @@ class CheckoutController extends Controller
             'total' => $total,
         ]);
 
-        // Készlet frissítése
-        foreach ($cart as $item) {
-            $product = Product::find($item['id']);
-            $product->decrement('stock', $item['qty']);
+        // Készlet frissítése - csak egyszer
+        foreach ($cart as $id => $item) {
+            $product = Product::find($id);
+            if ($product) {
+                $product->decrement('stock', $item['qty']);
+            }
         }
 
         // Kosár ürítése

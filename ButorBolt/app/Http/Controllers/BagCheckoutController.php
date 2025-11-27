@@ -13,12 +13,13 @@ class BagCheckoutController extends Controller
         $cart = $request->session()->get('cart', []);
         $total = collect($cart)->sum(fn($row) => $row['price'] * $row['qty']);
 
-        foreach ($cart as $id => &$row) {
+        $stockMap = [];
+        foreach ($cart as $id => $row) {
             $product = Product::find($id);
-            $row['stock'] = $product ? $product->stock : 0;
+            $stockMap[$id] = $product->stock ?? 0;
         }
 
-        return view('bag', compact('cart', 'total'));
+        return view('bag', compact('cart', 'total', 'stockMap'));
     }
 
     public function add(Request $request, $id)
